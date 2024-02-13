@@ -1,0 +1,2 @@
+sample-id	forward-absolute-filepath	reverse-absolute-filepath
+negative_control	/scratch_vol1/fungi/Coral_block_colonisation/03_cleaned_data/Original_reads_16S_ITS_18S/BL-PCR-Jourand_S111_L001_R1_001.paired.fastq.gz 	/scratch_vol1/fungi/Coral_block_colonisation/03_cleaned_data/Original_reads_16S_ITS_18S/BL-PCR-Jourand_S111_L001_R2_001.paired.fastq.gz
