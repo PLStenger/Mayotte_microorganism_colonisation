@@ -37,7 +37,9 @@ do
    R1unpaired=${R1//.fastq/_unpaired.fastq.gz}	
    R2paired=${R2//.fastq/_paired.fastq.gz}
    R2unpaired=${R2//.fastq/_unpaired.fastq.gz}	
-   echo "trimmomatic PE -Xmx60G -threads 8 -phred33 $R1 $R2 $R1paired $R1unpaired $R2paired $R2unpaired ILLUMINACLIP:"$ADAPTERFILE":2:30:10 LEADING:30 TRAILING:30 SLIDINGWINDOW:26:30 MINLEN:150"
+
+   trimmomatic PE -Xmx60G -threads 8 -phred33 $R1 $R2 $R1paired $R1unpaired $R2paired $R2unpaired ILLUMINACLIP:"$ADAPTERFILE":2:30:10 LEADING:30 TRAILING:30 SLIDINGWINDOW:26:30 MINLEN:150
+
 done ;
 	
 	
@@ -86,7 +88,9 @@ do
    R1unpaired=${R1//.fastq/_unpaired.fastq.gz}	
    R2paired=${R2//.fastq/_paired.fastq.gz}
    R2unpaired=${R2//.fastq/_unpaired.fastq.gz}	
-   echo "trimmomatic PE -Xmx60G -threads 8 -phred33 $R1 $R2 $R1paired $R1unpaired $R2paired $R2unpaired ILLUMINACLIP:"$ADAPTERFILE":2:30:10 LEADING:30 TRAILING:30 SLIDINGWINDOW:26:30 MINLEN:150"
+
+   trimmomatic PE -Xmx60G -threads 8 -phred33 $R1 $R2 $R1paired $R1unpaired $R2paired $R2unpaired ILLUMINACLIP:"$ADAPTERFILE":2:30:10 LEADING:30 TRAILING:30 SLIDINGWINDOW:26:30 MINLEN:150
+
 done ;
 
 
@@ -120,7 +124,8 @@ do
    R1unpaired=${R1//.fastq/_unpaired.fastq.gz}	
    R2paired=${R2//.fastq/_paired.fastq.gz}
    R2unpaired=${R2//.fastq/_unpaired.fastq.gz}	
-   echo "trimmomatic PE -Xmx60G -threads 8 -phred33 $R1 $R2 $R1paired $R1unpaired $R2paired $R2unpaired ILLUMINACLIP:"$ADAPTERFILE":2:30:10 LEADING:30 TRAILING:30 SLIDINGWINDOW:26:30 MINLEN:150"
+   
+   trimmomatic PE -Xmx60G -threads 8 -phred33 $R1 $R2 $R1paired $R1unpaired $R2paired $R2unpaired ILLUMINACLIP:"$ADAPTERFILE":2:30:10 LEADING:30 TRAILING:30 SLIDINGWINDOW:26:30 MINLEN:150
 done ;
 
 
@@ -154,5 +159,8 @@ do
    R1unpaired=${R1//.fastq/_unpaired.fastq.gz}	
    R2paired=${R2//.fastq/_paired.fastq.gz}
    R2unpaired=${R2//.fastq/_unpaired.fastq.gz}	
-   echo "trimmomatic PE -Xmx60G -threads 8 -phred33 $R1 $R2 $R1paired $R1unpaired $R2paired $R2unpaired ILLUMINACLIP:"$ADAPTERFILE":2:30:10 LEADING:30 TRAILING:30 SLIDINGWINDOW:26:30 MINLEN:150"
+   
+   trimmomatic PE -Xmx60G -threads 8 -phred33 $R1 $R2 $R1paired $R1unpaired $R2paired $R2unpaired ILLUMINACLIP:"$ADAPTERFILE":2:30:10 LEADING:30 TRAILING:30 SLIDINGWINDOW:26:30 MINLEN:150
 done ;
+
+
