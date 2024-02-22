@@ -37,7 +37,7 @@ do
 	base="${filename%*_*.fastq.gz}"
 	echo "${base}"
 	
-	trimmomatic PE -Xmx60G -threads 8 -phred33 $WORKING_DIRECTORY/"${base}"*_R1.fastq.gz $WORKING_DIRECTORY/"${base}"*_R2.fastq.gz $OUTPUT/"${base}"*_R1.paired.fastq.gz $OUTPUT/"${base}"*_R1.single.fastq.gz $OUTPUT/"${base}"*_R2.paired.fastq.gz $OUTPUT/"${base}"*_R2.single.fastq.gz ILLUMINACLIP:"$ADAPTERFILE":2:30:10 LEADING:30 TRAILING:30 SLIDINGWINDOW:26:30 MINLEN:150
+	trimmomatic PE -Xmx60G -threads 8 -phred33 $WORKING_DIRECTORY/"${base}"*_R1_001.fastq.gz $WORKING_DIRECTORY/"${base}"*_R2_001.fastq.gz $OUTPUT/"${base}"*_R1_001.paired.fastq.gz $OUTPUT/"${base}"*_R1_001.single.fastq.gz $OUTPUT/"${base}"*_R2_001.paired.fastq.gz $OUTPUT/"${base}"*_R2_001.single.fastq.gz ILLUMINACLIP:"$ADAPTERFILE":2:30:10 LEADING:30 TRAILING:30 SLIDINGWINDOW:26:30 MINLEN:150
 	
 done ;
 
@@ -72,7 +72,7 @@ do
 	base="${filename%*_*.fastq.gz}"
 	echo "${base}"
 	
-	trimmomatic PE -Xmx60G -threads 8 -phred33 $WORKING_DIRECTORY/"${base}"*_R1.fastq.gz $WORKING_DIRECTORY/"${base}"*_R2.fastq.gz $OUTPUT/"${base}"*_R1.paired.fastq.gz $OUTPUT/"${base}"*_R1.single.fastq.gz $OUTPUT/"${base}"*_R2.paired.fastq.gz $OUTPUT/"${base}"*_R2.single.fastq.gz ILLUMINACLIP:"$ADAPTERFILE":2:30:10 LEADING:30 TRAILING:30 SLIDINGWINDOW:26:30 MINLEN:150
+	trimmomatic PE -Xmx60G -threads 8 -phred33 $WORKING_DIRECTORY/"${base}"*_R1_001.fastq.gz $WORKING_DIRECTORY/"${base}"*_R2_001.fastq.gz $OUTPUT/"${base}"*_R1_001.paired.fastq.gz $OUTPUT/"${base}"*_R1_001.single.fastq.gz $OUTPUT/"${base}"*_R2_001.paired.fastq.gz $OUTPUT/"${base}"*_R2_001.single.fastq.gz ILLUMINACLIP:"$ADAPTERFILE":2:30:10 LEADING:30 TRAILING:30 SLIDINGWINDOW:26:30 MINLEN:150
 	
 done ;
 
@@ -107,7 +107,7 @@ do
 	base="${filename%*_*.fastq.gz}"
 	echo "${base}"
 	
-	trimmomatic PE -Xmx60G -threads 8 -phred33 $WORKING_DIRECTORY/"${base}"*_R1.fastq.gz $WORKING_DIRECTORY/"${base}"*_R2.fastq.gz $OUTPUT/"${base}"*_R1.paired.fastq.gz $OUTPUT/"${base}"*_R1.single.fastq.gz $OUTPUT/"${base}"*_R2.paired.fastq.gz $OUTPUT/"${base}"*_R2.single.fastq.gz ILLUMINACLIP:"$ADAPTERFILE":2:30:10 LEADING:30 TRAILING:30 SLIDINGWINDOW:26:30 MINLEN:150
+	trimmomatic PE -Xmx60G -threads 8 -phred33 $WORKING_DIRECTORY/"${base}"*_R1_001.fastq.gz $WORKING_DIRECTORY/"${base}"*_R2_001.fastq.gz $OUTPUT/"${base}"*_R1_001.paired.fastq.gz $OUTPUT/"${base}"*_R1_001.single.fastq.gz $OUTPUT/"${base}"*_R2_001.paired.fastq.gz $OUTPUT/"${base}"*_R2_001.single.fastq.gz ILLUMINACLIP:"$ADAPTERFILE":2:30:10 LEADING:30 TRAILING:30 SLIDINGWINDOW:26:30 MINLEN:150
 	
 done ;
 
@@ -142,6 +142,6 @@ do
 	base="${filename%*_*.fastq.gz}"
 	echo "${base}"
 	
-	trimmomatic PE -Xmx60G -threads 8 -phred33 $WORKING_DIRECTORY/"${base}"*_R1.fastq.gz $WORKING_DIRECTORY/"${base}"*_R2.fastq.gz $OUTPUT/"${base}"*_R1.paired.fastq.gz $OUTPUT/"${base}"*_R1.single.fastq.gz $OUTPUT/"${base}"*_R2.paired.fastq.gz $OUTPUT/"${base}"*_R2.single.fastq.gz ILLUMINACLIP:"$ADAPTERFILE":2:30:10 LEADING:30 TRAILING:30 SLIDINGWINDOW:26:30 MINLEN:150
+	trimmomatic PE -Xmx60G -threads 8 -phred33 $WORKING_DIRECTORY/"${base}"*_R1_001.fastq.gz $WORKING_DIRECTORY/"${base}"*_R2_001.fastq.gz $OUTPUT/"${base}"*_R1_001.paired.fastq.gz $OUTPUT/"${base}"*_R1_001.single.fastq.gz $OUTPUT/"${base}"*_R2_001.paired.fastq.gz $OUTPUT/"${base}"*_R2_001.single.fastq.gz ILLUMINACLIP:"$ADAPTERFILE":2:30:10 LEADING:30 TRAILING:30 SLIDINGWINDOW:26:30 MINLEN:150
 	
 done ;
