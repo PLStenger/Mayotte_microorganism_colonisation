@@ -29,17 +29,30 @@ conda activate trimmomatic
 
 cd $WORKING_DIRECTORY
 
-
-for FILE in $(ls $WORKING_DIRECTORY/*_R1_001.fastq.gz)
+	
+for R1 in *R1*
 do
-	withpath="${FILE}"
-	filename=${withpath##*/}
-	base="${filename%*_*.fastq.gz}"
-	echo "${base}"
-	
-	trimmomatic PE -Xmx60G -threads 8 -phred33 $WORKING_DIRECTORY/"${base}"*_R1_001.fastq.gz $WORKING_DIRECTORY/"${base}"*_R2_001.fastq.gz $OUTPUT/"${base}"*_R1_001.paired.fastq.gz $OUTPUT/"${base}"*_R1_001.single.fastq.gz $OUTPUT/"${base}"*_R2_001.paired.fastq.gz $OUTPUT/"${base}"*_R2_001.single.fastq.gz ILLUMINACLIP:"$ADAPTERFILE":2:30:10 LEADING:30 TRAILING:30 SLIDINGWINDOW:26:30 MINLEN:150
-	
+   R2=${R1//R1_001.fastq.gz/R2_001.fastq.gz}
+   R1paired=${R1//.fastq/_paired.fastq.gz}
+   R1unpaired=${R1//.fastq/_unpaired.fastq.gz}	
+   R2paired=${R2//.fastq/_paired.fastq.gz}
+   R2unpaired=${R2//.fastq/_unpaired.fastq.gz}	
+   echo "trimmomatic PE -Xmx60G -threads 8 -phred33 $R1 $R2 $R1paired $R1unpaired $R2paired $R2unpaired ILLUMINACLIP:"$ADAPTERFILE":2:30:10 LEADING:30 TRAILING:30 SLIDINGWINDOW:26:30 MINLEN:150"
 done ;
+	
+	
+#for FILE in $(ls $WORKING_DIRECTORY/*_R1_001.fastq.gz)
+	#do
+		
+	
+#	withpath="${FILE}"
+#	filename=${withpath##*/}
+#	base="${filename%*_*.fastq.gz}"
+#	echo "${base}"
+	
+#	trimmomatic PE -Xmx60G -threads 8 -phred33 $WORKING_DIRECTORY/"${base}"*_R1_001.fastq.gz $WORKING_DIRECTORY/"${base}"*_R2_001.fastq.gz $OUTPUT/"${base}"*_R1_001.paired.fastq.gz $OUTPUT/"${base}"*_R1_001.single.fastq.gz $OUTPUT/"${base}"*_R2_001.paired.fastq.gz $OUTPUT/"${base}"*_R2_001.single.fastq.gz ILLUMINACLIP:"$ADAPTERFILE":2:30:10 LEADING:30 TRAILING:30 SLIDINGWINDOW:26:30 MINLEN:150
+	
+#done ;
 
 
 ######################################################################################################################################################
@@ -65,15 +78,15 @@ conda activate trimmomatic
 cd $WORKING_DIRECTORY
 
 
-for FILE in $(ls $WORKING_DIRECTORY/*_R1_001.fastq.gz)
+	
+for R1 in *R1*
 do
-	withpath="${FILE}"
-	filename=${withpath##*/}
-	base="${filename%*_*.fastq.gz}"
-	echo "${base}"
-	
-	trimmomatic PE -Xmx60G -threads 8 -phred33 $WORKING_DIRECTORY/"${base}"*_R1_001.fastq.gz $WORKING_DIRECTORY/"${base}"*_R2_001.fastq.gz $OUTPUT/"${base}"*_R1_001.paired.fastq.gz $OUTPUT/"${base}"*_R1_001.single.fastq.gz $OUTPUT/"${base}"*_R2_001.paired.fastq.gz $OUTPUT/"${base}"*_R2_001.single.fastq.gz ILLUMINACLIP:"$ADAPTERFILE":2:30:10 LEADING:30 TRAILING:30 SLIDINGWINDOW:26:30 MINLEN:150
-	
+   R2=${R1//R1_001.fastq.gz/R2_001.fastq.gz}
+   R1paired=${R1//.fastq/_paired.fastq.gz}
+   R1unpaired=${R1//.fastq/_unpaired.fastq.gz}	
+   R2paired=${R2//.fastq/_paired.fastq.gz}
+   R2unpaired=${R2//.fastq/_unpaired.fastq.gz}	
+   echo "trimmomatic PE -Xmx60G -threads 8 -phred33 $R1 $R2 $R1paired $R1unpaired $R2paired $R2unpaired ILLUMINACLIP:"$ADAPTERFILE":2:30:10 LEADING:30 TRAILING:30 SLIDINGWINDOW:26:30 MINLEN:150"
 done ;
 
 
@@ -100,15 +113,14 @@ conda activate trimmomatic
 cd $WORKING_DIRECTORY
 
 
-for FILE in $(ls $WORKING_DIRECTORY/*_R1_001.fastq.gz)
+for R1 in *R1*
 do
-	withpath="${FILE}"
-	filename=${withpath##*/}
-	base="${filename%*_*.fastq.gz}"
-	echo "${base}"
-	
-	trimmomatic PE -Xmx60G -threads 8 -phred33 $WORKING_DIRECTORY/"${base}"*_R1_001.fastq.gz $WORKING_DIRECTORY/"${base}"*_R2_001.fastq.gz $OUTPUT/"${base}"*_R1_001.paired.fastq.gz $OUTPUT/"${base}"*_R1_001.single.fastq.gz $OUTPUT/"${base}"*_R2_001.paired.fastq.gz $OUTPUT/"${base}"*_R2_001.single.fastq.gz ILLUMINACLIP:"$ADAPTERFILE":2:30:10 LEADING:30 TRAILING:30 SLIDINGWINDOW:26:30 MINLEN:150
-	
+   R2=${R1//R1_001.fastq.gz/R2_001.fastq.gz}
+   R1paired=${R1//.fastq/_paired.fastq.gz}
+   R1unpaired=${R1//.fastq/_unpaired.fastq.gz}	
+   R2paired=${R2//.fastq/_paired.fastq.gz}
+   R2unpaired=${R2//.fastq/_unpaired.fastq.gz}	
+   echo "trimmomatic PE -Xmx60G -threads 8 -phred33 $R1 $R2 $R1paired $R1unpaired $R2paired $R2unpaired ILLUMINACLIP:"$ADAPTERFILE":2:30:10 LEADING:30 TRAILING:30 SLIDINGWINDOW:26:30 MINLEN:150"
 done ;
 
 
@@ -135,13 +147,12 @@ conda activate trimmomatic
 cd $WORKING_DIRECTORY
 
 
-for FILE in $(ls $WORKING_DIRECTORY/*_R1_001.fastq.gz)
+for R1 in *R1*
 do
-	withpath="${FILE}"
-	filename=${withpath##*/}
-	base="${filename%*_*.fastq.gz}"
-	echo "${base}"
-	
-	trimmomatic PE -Xmx60G -threads 8 -phred33 $WORKING_DIRECTORY/"${base}"*_R1_001.fastq.gz $WORKING_DIRECTORY/"${base}"*_R2_001.fastq.gz $OUTPUT/"${base}"*_R1_001.paired.fastq.gz $OUTPUT/"${base}"*_R1_001.single.fastq.gz $OUTPUT/"${base}"*_R2_001.paired.fastq.gz $OUTPUT/"${base}"*_R2_001.single.fastq.gz ILLUMINACLIP:"$ADAPTERFILE":2:30:10 LEADING:30 TRAILING:30 SLIDINGWINDOW:26:30 MINLEN:150
-	
+   R2=${R1//R1_001.fastq.gz/R2_001.fastq.gz}
+   R1paired=${R1//.fastq/_paired.fastq.gz}
+   R1unpaired=${R1//.fastq/_unpaired.fastq.gz}	
+   R2paired=${R2//.fastq/_paired.fastq.gz}
+   R2unpaired=${R2//.fastq/_unpaired.fastq.gz}	
+   echo "trimmomatic PE -Xmx60G -threads 8 -phred33 $R1 $R2 $R1paired $R1unpaired $R2paired $R2unpaired ILLUMINACLIP:"$ADAPTERFILE":2:30:10 LEADING:30 TRAILING:30 SLIDINGWINDOW:26:30 MINLEN:150"
 done ;
