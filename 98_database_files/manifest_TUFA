@@ -1,3 +1,4 @@
+sample-id	forward-absolute-filepath	reverse-absolute-filepath
 ae-ba-1-27-03-23	/home/fungi/Mayotte_microorganism_colonisation/01_raw_data/tufA/2_Filtered/Original_reads/ae-ba-1-27-03-23-tufA_S01_R1_001.fastq.gz	/home/fungi/Mayotte_microorganism_colonisation/01_raw_data/tufA/2_Filtered/Original_reads/ae-ba-1-27-03-23-tufA_S01_R2_001.fastq.gz
 ae-ba-2-27-03-23	/home/fungi/Mayotte_microorganism_colonisation/01_raw_data/tufA/2_Filtered/Original_reads/ae-ba-2-27-03-23-tufA_S02_R1_001.fastq.gz	/home/fungi/Mayotte_microorganism_colonisation/01_raw_data/tufA/2_Filtered/Original_reads/ae-ba-2-27-03-23-tufA_S02_R2_001.fastq.gz
 ae-ba-3-27-03-23	/home/fungi/Mayotte_microorganism_colonisation/01_raw_data/tufA/2_Filtered/Original_reads/ae-ba-3-27-03-23-tufA_S03_R1_001.fastq.gz	/home/fungi/Mayotte_microorganism_colonisation/01_raw_data/tufA/2_Filtered/Original_reads/ae-ba-3-27-03-23-tufA_S03_R2_001.fastq.gz
