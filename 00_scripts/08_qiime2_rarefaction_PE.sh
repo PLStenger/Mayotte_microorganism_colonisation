@@ -32,7 +32,7 @@ echo $TMPDIR
 qiime diversity alpha-rarefaction \
   --i-table core/Table.qza \
   --i-phylogeny tree/rooted-tree.qza \
-  --p-max-depth 22828 \
+  --p-max-depth 62840 \
   --p-min-depth 1 \
   --m-metadata-file $DATABASE/sample-metadata_16S.tsv \
   --o-visualization visual/alpha-rarefaction.qzv
@@ -101,7 +101,7 @@ echo $TMPDIR
 qiime diversity alpha-rarefaction \
   --i-table core/Table.qza \
   --i-phylogeny tree/rooted-tree.qza \
-  --p-max-depth 22828 \
+  --p-max-depth 16205 \
   --p-min-depth 1 \
   --m-metadata-file $DATABASE/sample-metadata_ITS.tsv \
   --o-visualization visual/alpha-rarefaction.qzv
@@ -170,7 +170,7 @@ echo $TMPDIR
 qiime diversity alpha-rarefaction \
   --i-table core/Table.qza \
   --i-phylogeny tree/rooted-tree.qza \
-  --p-max-depth 22828 \
+  --p-max-depth 35865 \
   --p-min-depth 1 \
   --m-metadata-file $DATABASE/sample-metadata_TUFA.tsv \
   --o-visualization visual/alpha-rarefaction.qzv
@@ -239,7 +239,7 @@ echo $TMPDIR
 qiime diversity alpha-rarefaction \
   --i-table core/Table.qza \
   --i-phylogeny tree/rooted-tree.qza \
-  --p-max-depth 22828 \
+  --p-max-depth 31639 \
   --p-min-depth 1 \
   --m-metadata-file $DATABASE/sample-metadata_18S.tsv \
   --o-visualization visual/alpha-rarefaction.qzv
