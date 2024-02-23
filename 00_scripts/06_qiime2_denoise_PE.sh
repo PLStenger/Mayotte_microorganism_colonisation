@@ -6,8 +6,8 @@
 ######################################################################################################################################################
 ######################################################################################################################################################
 
-WORKING_DIRECTORY=/home/fungi/Mayotte_microorganism_colonisation/03_cleaned_data/16S
-OUTPUT=/home/fungi/Mayotte_microorganism_colonisation/05_QIIME2/16S
+WORKING_DIRECTORY=/home/fungi/Mayotte_microorganism_colonisation/05_QIIME2/16S
+OUTPUT=/home/fungi/Mayotte_microorganism_colonisation/05_QIIME2/16S/visual
 
 # Make the directory (mkdir) only if not existe already(-p)
 mkdir -p $OUTPUT
@@ -166,8 +166,8 @@ qiime tools export --input-path visual/NegRepSeq.qzv --output-path export/visual
 ######################################################################################################################################################
 ######################################################################################################################################################
 
-WORKING_DIRECTORY=/home/fungi/Mayotte_microorganism_colonisation/03_cleaned_data/ITS
-OUTPUT=/home/fungi/Mayotte_microorganism_colonisation/05_QIIME2/ITS
+WORKING_DIRECTORY=/home/fungi/Mayotte_microorganism_colonisation/05_QIIME2/ITS
+OUTPUT=/home/fungi/Mayotte_microorganism_colonisation/05_QIIME2/ITS/visual
 
 # Make the directory (mkdir) only if not existe already(-p)
 mkdir -p $OUTPUT
@@ -325,8 +325,8 @@ qiime tools export --input-path visual/NegRepSeq.qzv --output-path export/visual
 ######################################################################################################################################################
 ######################################################################################################################################################
 
-WORKING_DIRECTORY=/home/fungi/Mayotte_microorganism_colonisation/03_cleaned_data/TUFA
-OUTPUT=/home/fungi/Mayotte_microorganism_colonisation/05_QIIME2/TUFA
+WORKING_DIRECTORY=/home/fungi/Mayotte_microorganism_colonisation/05_QIIME2/TUFA
+OUTPUT=/home/fungi/Mayotte_microorganism_colonisation/05_QIIME2/TUFA/visual
 
 # Make the directory (mkdir) only if not existe already(-p)
 mkdir -p $OUTPUT
@@ -484,8 +484,8 @@ qiime tools export --input-path visual/NegRepSeq.qzv --output-path export/visual
 ######################################################################################################################################################
 ######################################################################################################################################################
 
-WORKING_DIRECTORY=/home/fungi/Mayotte_microorganism_colonisation/03_cleaned_data/18S
-OUTPUT=/home/fungi/Mayotte_microorganism_colonisation/05_QIIME2/18S
+WORKING_DIRECTORY=/home/fungi/Mayotte_microorganism_colonisation/05_QIIME2/18S
+OUTPUT=/home/fungi/Mayotte_microorganism_colonisation/05_QIIME2/18S/visual
 
 # Make the directory (mkdir) only if not existe already(-p)
 mkdir -p $OUTPUT
