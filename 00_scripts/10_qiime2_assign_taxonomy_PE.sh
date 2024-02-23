@@ -289,7 +289,7 @@ echo $TMPDIR
 
 qiime tools import --type 'FeatureData[Taxonomy]' \
   --input-format HeaderlessTSVTaxonomyFormat \
-  --input-path /home/fungi/Pycnandra/98_database_files/ITS/sh_taxonomy_qiime_ver8_dynamic_s_10.05.2021.txt \
+  --input-path $DATABASE/sh_taxonomy_qiime_ver8_dynamic_s_10.05.2021.txt \
   --output-path taxonomy/ITS/RefTaxo.qza
 
 
@@ -300,7 +300,7 @@ qiime tools import --type 'FeatureData[Taxonomy]' \
 # OLD = /home/fungi/Diversity_in_Mare_yam_crop/98_database_files/ITS2/Sequence-UNITE-V7-S-2017.12.01-dynamic.fasta
 
 qiime tools import --type 'FeatureData[Sequence]' \
-  --input-path /home/fungi/Pycnandra/98_database_files/ITS/sh_refs_qiime_ver8_dynamic_s_10.05.2021.fasta \
+  --input-path $DATABASE/sh_refs_qiime_ver8_dynamic_s_10.05.2021.fasta \
   --output-path taxonomy/ITS/DataSeq.qza
 
 # Fungal ITS classifiers trained on the UNITE reference database do NOT benefit
