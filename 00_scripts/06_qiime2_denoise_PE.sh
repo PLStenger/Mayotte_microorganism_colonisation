@@ -72,7 +72,7 @@ qiime dada2 denoise-paired --i-demultiplexed-seqs core/demux.qza \
 # Paste them in a contamination_seq.fasta file, then :
  
 qiime tools import \
-  --input-path $NEG_CONTROL/contamination_seq.fasta \
+  --input-path $NEG_CONTROL/contamination_seq_16S.fasta \
   --output-path $NEG_CONTROL/contamination_seq.qza \
   --type 'FeatureData[Sequence]'
 
@@ -232,7 +232,7 @@ qiime dada2 denoise-paired --i-demultiplexed-seqs core/demux.qza \
 # Paste them in a contamination_seq.fasta file, then :
  
 qiime tools import \
-  --input-path $NEG_CONTROL/contamination_seq.fasta \
+  --input-path $NEG_CONTROL/contamination_seq_ITS.fasta \
   --output-path $NEG_CONTROL/contamination_seq.qza \
   --type 'FeatureData[Sequence]'
 
@@ -391,7 +391,7 @@ qiime dada2 denoise-paired --i-demultiplexed-seqs core/demux.qza \
 # Paste them in a contamination_seq.fasta file, then :
  
 qiime tools import \
-  --input-path $NEG_CONTROL/contamination_seq.fasta \
+  --input-path $NEG_CONTROL/contamination_seq_TUFA.fasta \
   --output-path $NEG_CONTROL/contamination_seq.qza \
   --type 'FeatureData[Sequence]'
 
@@ -550,7 +550,7 @@ qiime dada2 denoise-paired --i-demultiplexed-seqs core/demux.qza \
 # Paste them in a contamination_seq.fasta file, then :
  
 qiime tools import \
-  --input-path $NEG_CONTROL/contamination_seq.fasta \
+  --input-path $NEG_CONTROL/contamination_seq_18S.fasta \
   --output-path $NEG_CONTROL/contamination_seq.qza \
   --type 'FeatureData[Sequence]'
 
