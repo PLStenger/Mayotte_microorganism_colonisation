@@ -1,351 +1,16 @@
 #!/usr/bin/env bash
 
-## WORKING_DIRECTORY=/scratch_vol1/fungi/Mayotte_microorganism_colonisation/05_QIIME2/Original_reads_TUFA
-## OUTPUT=/scratch_vol1/fungi/Mayotte_microorganism_colonisation/05_QIIME2/Original_reads_TUFA/visual
-## 
-## DATABASE=/scratch_vol1/fungi/Mayotte_microorganism_colonisation/98_database_files
-## TMPDIR=/scratch_vol1
-## 
-## # Aim: perform diversity metrics and rarefaction
-## 
-## # https://chmi-sops.github.io/mydoc_qiime2.html#step-8-calculate-and-explore-diversity-metrics
-## # https://docs.qiime2.org/2018.2/tutorials/moving-pictures/#alpha-rarefaction-plotting
-## # https://forum.qiime2.org/t/how-to-decide-p-sampling-depth-value/3296/6
-## 
-## # Use QIIME2’s diversity core-metrics-phylogenetic function to calculate a whole bunch of diversity metrics all at once. 
-## # Note that you should input a sample-depth value based on the alpha-rarefaction analysis that you ran before.
-## 
-## # sample-depth value choice : 
-## # We are ideally looking for a sequencing depth at the point where these rarefaction curves begin to level off (indicating that most of the relevant diversity has been captured).
-## # This helps inform tough decisions that we need to make when some samples have lower sequence counts and we need to balance the priorities that you want to choose 
-## # a value high enough that you capture the diversity present in samples with high counts, but low enough that you don’t get rid of a ton of your samples.
-## 
-## cd $WORKING_DIRECTORY
-## 
-## eval "$(conda shell.bash hook)"
-## conda activate qiime2-2021.4
-## 
-## # Make the directory (mkdir) only if not existe already(-p)
-## mkdir -p pcoa
-## mkdir -p export/pcoa
-## 
-## # I'm doing this step in order to deal the no space left in cluster :
-## export TMPDIR='/scratch_vol1/fungi'
-## echo $TMPDIR
-## 
-## # core_metrics_phylogenetic:
-## ############################
-##     # Aim: Applies a collection of diversity metrics to a feature table
-##     # Use: qiime diversity core-metrics-phylogenetic [OPTIONS]
-##     
-##     # With 4202 -> 0 samples deleted
-## 
-## qiime diversity core-metrics-phylogenetic \
-##        --i-phylogeny tree/rooted-tree.qza \
-##        --i-table core/Table.qza \
-##        --p-sampling-depth 15496 \
-##        --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
-##        --o-rarefied-table core/RarTable.qza \
-##        --o-observed-features-vector core/Vector-observed_asv.qza \
-##        --o-shannon-vector core/Vector-shannon.qza \
-##        --o-evenness-vector core/Vector-evenness.qza \
-##        --o-faith-pd-vector core/Vector-faith_pd.qza \
-##        --o-jaccard-distance-matrix core/Matrix-jaccard.qza \
-##        --o-bray-curtis-distance-matrix core/Matrix-braycurtis.qza \
-##        --o-unweighted-unifrac-distance-matrix core/Matrix-unweighted_unifrac.qza \
-##        --o-weighted-unifrac-distance-matrix core/Matrix-weighted_unifrac.qza \
-##        --o-jaccard-pcoa-results pcoa/PCoA-jaccard.qza \
-##        --o-bray-curtis-pcoa-results pcoa/PCoA-braycurtis.qza \
-##        --o-unweighted-unifrac-pcoa-results pcoa/PCoA-unweighted_unifrac.qza \
-##        --o-weighted-unifrac-pcoa-results pcoa/PCoA-weighted_unifrac.qza \
-##        --o-jaccard-emperor visual/Emperor-jaccard.qzv \
-##        --o-bray-curtis-emperor visual/Emperor-braycurtis.qzv \
-##        --o-unweighted-unifrac-emperor visual/Emperor-unweighted_unifrac.qzv \
-##        --o-weighted-unifrac-emperor visual/Emperor-weighted_unifrac.qzv
-## 
-## 
-## # sequence_rarefaction_filter:
-## ##############################
-## 
-## # Aim: Filter features from sequences based on a feature table or metadata.
-## # Use: qiime feature-table filter-seqs [OPTIONS]
-## 
-## qiime feature-table filter-seqs \
-##         --i-data core/RepSeq.qza \
-##         --i-table core/RarTable.qza \
-##         --o-filtered-data core/RarRepSeq.qza
-## 
-## # summarize_sequence:
-## #####################
-## 
-## qiime feature-table tabulate-seqs \
-##        --i-data core/RarRepSeq.qza \
-##        --o-visualization core/RarRepSeq.qzv
-## 
-## # summarize_table :
-## ##################
-## 
-## # Aim: Generate visual and tabular summaries of a feature table
-## # Use: qiime feature-table summarize [OPTIONS]
-## 
-## qiime feature-table summarize \
-##        --i-table core/RarTable.qza \
-##        --m-sample-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
-##        --o-visualization core/RarTable.qzv
-## 
-## 
-## # Aim: compute user-specified diversity metrics and pcoa with emperor plot :
-## ############################################################################
-## 
-## # alpha_diversity; Aim: Compute a user-specified alpha diversity metric, for all samples in a feature table
-## ############################################################################################################
-## 
-## # Simpson's index: Measures the relative abundance of the different species making up the sample richness.
-## qiime diversity alpha --i-table core/RarTable.qza \
-##         --p-metric simpson \
-##         --o-alpha-diversity core/Vector-simpson.qza
-## 
-## # Simpson evenness measure E: Diversity that account for the number of organisms and number of species.
-## qiime diversity alpha --i-table core/RarTable.qza \
-##         --p-metric simpson_e \
-##         --o-alpha-diversity core/Vector-simpson_e.qza
-## 
-## # Fisher's index: Relationship between the number of species and the abundance of each species.
-## qiime diversity alpha --i-table core/RarTable.qza \
-##         --p-metric fisher_alpha \
-##         --o-alpha-diversity core/Vector-fisher_alpha.qza
-##         
-## # Pielou's evenness: Measure of relative evenness of species richness.
-## qiime diversity alpha --i-table core/RarTable.qza \
-##         --p-metric pielou_e \
-##         --o-alpha-diversity core/Vector-pielou_e.qza        
-## 
-## # Chao1's index: Estimates diversity from abundant data and number of rare taxa missed from under sampling.
-## qiime diversity alpha --i-table core/RarTable.qza \
-##         --p-metric chao1 \
-##         --o-alpha-diversity core/Vector-chao1.qza   
-## 
-## # Chao1 confidence interval: Confidence interval for richness estimator chao1.
-## qiime diversity alpha --i-table core/RarTable.qza \
-##         --p-metric chao1_ci \
-##         --o-alpha-diversity core/Vector-chao1_ci.qza   
-## 
-## # beta_diversity; Aim: Compute a user-specified beta diversity metric, for all pairs of samples in a feature table
-## ##################################################################################################################
-## 
-## #         --p-n-jobs {params.jobs} \
-## 
-## # Jaccard similarity index: Fraction of unique features, regardless of abundance.
-## qiime diversity beta --i-table core/RarTable.qza \
-##         --p-metric jaccard \
-##         --o-distance-matrix core/Matrix-jaccard.qza
-## 
-## qiime diversity pcoa --i-distance-matrix core/Matrix-jaccard.qza \
-##         --o-pcoa pcoa/PCoA-jaccard.qza
-##         
-## qiime emperor plot --i-pcoa pcoa/PCoA-jaccard.qza \
-##         --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
-##         --o-visualization visual/Emperor-jaccard.qzv
-##         
-##         
-## # Bray-Curtis dissimilarity: Fraction of overabundant counts.
-## qiime diversity beta --i-table core/RarTable.qza \
-##         --p-metric braycurtis \
-##         --o-distance-matrix core/Matrix-braycurtis.qza
-## 
-## qiime diversity pcoa --i-distance-matrix core/Matrix-braycurtis.qza \
-##         --o-pcoa pcoa/PCoA-braycurtis.qza
-## 
-## qiime emperor plot --i-pcoa pcoa/PCoA-braycurtis.qza \
-##         --m-metadata-file $DATABASE//sample-metadata_others_markers_NC.tsv \
-##         --o-visualization visual/Emperor-braycurtis.qzv
-## 
-## ### SIGNIFIANCE
-##   
-## # Now test for relationships between alpha diversity and study metadata   
-##   
-## qiime diversity alpha-group-significance \
-##   --i-alpha-diversity core/Vector-faith_pd.qza \
-##   --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
-##   --o-visualization core/faith-pd-group-significance.qzv
-## 
-## qiime diversity alpha-group-significance \
-##   --i-alpha-diversity core/Vector-evenness.qza \
-##   --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
-##   --o-visualization core/evenness-group-significance.qzv
-## 
-## qiime diversity alpha-group-significance \
-##   --i-alpha-diversity core/Vector-shannon.qza \
-##   --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
-##   --o-visualization core/shannon_group-significance.qzv  
-##   
-## # Aim: statistically compare groups of alpha/beta diversity values
-## # Aim: Visually and statistically compare groups of alpha diversity values
-## 
-## qiime diversity alpha-group-significance --i-alpha-diversity core/Vector-simpson.qza \
-##         --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
-##         --o-visualization visual/AlphaSignification-simpson.qzv
-## 
-## qiime diversity alpha-group-significance --i-alpha-diversity core/Vector-simpson_e.qza \
-##         --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
-##         --o-visualization visual/AlphaSignification-simpson_e.qzv
-##             
-## qiime diversity alpha-group-significance --i-alpha-diversity core/Vector-chao1_ci.qza \
-##         --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
-##         --o-visualization visual/AlphaSignification-chao1_ci.qzv
-## 
-## qiime diversity alpha-group-significance --i-alpha-diversity core/Vector-chao1.qza \
-##         --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
-##         --o-visualization visual/AlphaSignification-chao1.qzv
-## 
-## qiime diversity alpha-group-significance --i-alpha-diversity core/Vector-pielou_e.qza \
-##         --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
-##         --o-visualization visual/AlphaSignification-pielou_e.qzv
-##         
-## qiime diversity alpha-group-significance --i-alpha-diversity core/Vector-fisher_alpha.qza \
-##         --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
-##         --o-visualization visual/AlphaSignification-fisher_alpha.qzv
-## 
-## # Aim: Determine whether numeric sample metadata category is correlated with alpha diversity
-## 
-## qiime diversity alpha-correlation --i-alpha-diversity core/Vector-simpson.qza \
-##         --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
-##         --p-method spearman \
-##         --o-visualization visual/AlphaCorrelation-simpson.qzv
-## 
-## qiime diversity alpha-correlation --i-alpha-diversity core/Vector-simpson_e.qza \
-##         --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
-##         --p-method spearman \
-##         --o-visualization visual/AlphaCorrelation-simpson_e.qzv
-## 
-## qiime diversity alpha-correlation --i-alpha-diversity core/Vector-chao1_ci.qza \
-##         --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
-##         --p-method spearman \
-##         --o-visualization visual/AlphaCorrelation-chao1_ci.qzv
-## 
-## qiime diversity alpha-correlation --i-alpha-diversity core/Vector-chao1.qza \
-##         --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
-##         --p-method spearman \
-##         --o-visualization visual/AlphaCorrelation-chao1.qzv      
-##         
-## qiime diversity alpha-correlation --i-alpha-diversity core/Vector-pielou_e.qza \
-##         --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
-##         --p-method spearman \
-##         --o-visualization visual/AlphaCorrelation-pielou_e.qzv        
-##         
-##  qiime diversity alpha-correlation --i-alpha-diversity core/Vector-fisher_alpha.qza \
-##         --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
-##         --p-method spearman \
-##         --o-visualization visual/AlphaCorrelation-fisher_alpha.qzv        
-##   
-## # Now test for relationships between beta diversity and study metadata 
-## 
-## qiime diversity beta-group-significance \
-##   --i-distance-matrix core/Matrix-unweighted_unifrac.qza \
-##   --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
-##   --m-metadata-column Acronyme \
-##   --o-visualization core/unweighted-unifrac-Acronyme-significance.qzv \
-##   --p-pairwise
-## 
-## qiime diversity beta-group-significance \
-##   --i-distance-matrix core/Matrix-unweighted_unifrac.qza \
-##   --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
-##   --m-metadata-column SampleID \
-##   --o-visualization core/unweighted-unifrac-SampleID-group-significance.qzv \
-##   --p-pairwise
-##   
-## qiime diversity beta-group-significance --i-distance-matrix core/Matrix-jaccard.qza  \
-##         --m-metadata-file $METADATA_TUFA2/sample-metadata_others_markers_NC.tsv  \
-##         --m-metadata-column Acronyme \
-##         --o-visualization visual/BetaSignification-jaccard-Acronyme.qzv  \
-##         --p-method permanova  \
-##         --p-pairwise  \
-##         --p-permutations 9999
-##   
-## qiime diversity beta-group-significance --i-distance-matrix core/Matrix-braycurtis.qza  \
-##         --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv  \
-##         --m-metadata-column Acronyme \
-##         --o-visualization visual/BetaSignification-braycurtis-Acronyme.qzv  \
-##         --p-method permanova  \
-##         --p-pairwise  \
-##         --p-permutations 9999  
-## 
-## # Create a PCoA plot to explore beta diversity metric. 
-## # To do this you can use Emperor, a powerful tool for interactively exploring scatter plots. You do not need to install Emperor.
-## 
-## #first, use the unweighted unifrac data as input
-## qiime emperor plot \
-##   --i-pcoa pcoa/PCoA-unweighted_unifrac.qza \
-##   --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
-##   --p-custom-axes Acronyme \
-##   --o-visualization pcoa/unweighted-unifrac-emperor-Acronyme.qzv
-## 
-## #now repeat with bray curtis
-## qiime emperor plot \
-##   --i-pcoa pcoa/PCoA-braycurtis.qza \
-##   --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
-##   --p-custom-axes Acronyme \
-##   --o-visualization pcoa/bray-curtis-emperor-Acronyme.qzv
-## 
-## qiime tools export --input-path core/RarTable.qza --output-path export/table/RarTable
-## qiime tools export --input-path core/RarRepSeq.qza --output-path export/table/RarRepSeq
-## 
-## qiime tools export --input-path visual/BetaSignification-braycurtis-Acronyme.qzv --output-path export/visual/BetaSignification-braycurtis-Acronyme
-## qiime tools export --input-path visual/BetaSignification-jaccard-Acronyme.qzv --output-path export/visual/BetaSignification-jaccard-Acronyme
-## qiime tools export --input-path visual/AlphaCorrelation-fisher_alpha.qzv --output-path export/visual/AlphaCorrelation-fisher_alpha
-## qiime tools export --input-path visual/AlphaCorrelation-pielou_e.qzv --output-path export/visual/AlphaCorrelation-pielou_e
-## qiime tools export --input-path visual/AlphaCorrelation-chao1.qzv --output-path export/visual/AlphaCorrelation-chao1
-## qiime tools export --input-path visual/AlphaCorrelation-simpson_e.qzv --output-path export/visual/AlphaCorrelation-simpson_e
-## qiime tools export --input-path visual/AlphaCorrelation-simpson.qzv --output-path export/visual/AlphaCorrelation-simpson
-## qiime tools export --input-path visual/AlphaSignification-fisher_alpha.qzv --output-path export/visual/AlphaSignification-fisher_alpha
-## qiime tools export --input-path visual/AlphaSignification-pielou_e.qzv --output-path export/visual/AlphaSignification-pielou_e
-## qiime tools export --input-path visual/AlphaSignification-chao1.qzv --output-path export/visual/AlphaSignification-chao1
-## qiime tools export --input-path visual/AlphaSignification-simpson_e.qzv --output-path export/visual/AlphaSignification-simpson_e
-## qiime tools export --input-path visual/AlphaSignification-simpson.qzv --output-path export/visual/AlphaSignification-simpson
-## qiime tools export --input-path visual/Emperor-braycurtis.qzv --output-path export/visual/Emperor-braycurtis
-## qiime tools export --input-path visual/Emperor-jaccard.qzv --output-path export/visual/Emperor-jaccard
-## qiime tools export --input-path visual/Emperor-weighted_unifrac.qzv --output-path export/visual/Emperor-weighted_unifrac
-## qiime tools export --input-path visual/Emperor-unweighted_unifrac.qzv --output-path export/visual/Emperor-unweighted_unifrac 
-## 
-## qiime tools export --input-path core/bray_curtis_distance_matrix.qza --output-path export/core/bray_curtis_distance_matrix
-## qiime tools export --input-path core/Vector-evenness.qza --output-path export/core/Vector-evenness
-## qiime tools export --input-path core/Vector-faith_pd.qza --output-path export/core/Vector-faith_pd_BEFORE
-## qiime tools export --input-path core/jaccard_distance_matrix.qza --output-path export/core/jaccard_distance_matrix
-## qiime tools export --input-path core/jaccard_pcoa_results.qza --output-path export/core/jaccard_pcoa_results
-## qiime tools export --input-path core/observed_otus_vector.qza --output-path export/core/observed_otus_vector
-## qiime tools export --input-path core/rarefied_table.qza --output-path export/core/rarefied_table
-## qiime tools export --input-path core/Vector-shannon.qza --output-path export/core/Vector-shannon
-## qiime tools export --input-path core/Matrix-unweighted_unifrac.qza --output-path export/core/Matrix-unweighted_unifrac
-## qiime tools export --input-path core/weighted_unifrac_distance_matrix.qza --output-path export/core/weighted_unifrac_distance_matrix
-## qiime tools export --input-path core/weighted_unifrac_pcoa_results.qza --output-path export/core/weighted_unifrac_pcoa_results
-## 
-## qiime tools export --input-path core/Matrix-braycurtis.qza --output-path export/core/Matrix-braycurtis
-## qiime tools export --input-path core/Matrix-jaccard.qza --output-path export/core/Matrix-jaccard
-## qiime tools export --input-path core/Matrix-unweighted_unifrac.qza --output-path export/core/Matrix-unweighted_unifrac
-## qiime tools export --input-path core/Matrix-weighted_unifrac.qza --output-path export/core/Matrix-weighted_unifrac
-## qiime tools export --input-path core/Vector-evenness.qza --output-path export/core/Vector-evenness
-## qiime tools export --input-path core/Vector-faith_pd.qza --output-path export/core/Vector-faith_pd
-## qiime tools export --input-path core/Vector-observed_asv.qza --output-path export/core/Vector-observed_asv
-## qiime tools export --input-path core/Vector-shannon.qza --output-path export/core/Vector-shannon
-## 
-## qiime tools export --input-path pcoa/PCoA-braycurtis.qza --output-path export/pcoa/PCoA-braycurtis
-## qiime tools export --input-path pcoa/PCoA-jaccard.qza --output-path export/pcoa/PCoA-jaccard
-## qiime tools export --input-path pcoa/PCoA-unweighted_unifrac.qza --output-path export/pcoa/PCoA-unweighted_unifrac
-## qiime tools export --input-path pcoa/PCoA-weighted_unifrac.qza --output-path export/pcoa/PCoA-weighted_unifrac
+######################################################################################################################################################
+######################################################################################################################################################
+###### 16S ######
+######################################################################################################################################################
+######################################################################################################################################################
 
+WORKING_DIRECTORY=/home/fungi/Mayotte_microorganism_colonisation/05_QIIME2/16S
+OUTPUT=/home/fungi/Mayotte_microorganism_colonisation/05_QIIME2/16S/visual
 
-
-
-
-
-
-
-
-WORKING_DIRECTORY=/scratch_vol1/fungi/Mayotte_microorganism_colonisation/05_QIIME2/Original_reads_16S_ITS_18S_NC
-OUTPUT=/scratch_vol1/fungi/Mayotte_microorganism_colonisation/05_QIIME2/Original_reads_16S_ITS_18S_NC/visual
-
-DATABASE=/scratch_vol1/fungi/Mayotte_microorganism_colonisation/98_database_files
-TMPDIR=/scratch_vol1
+DATABASE=/home/fungi/Mayotte_microorganism_colonisation/98_database_files
+TMPDIR=/home
 
 # Aim: perform diversity metrics and rarefaction
 
@@ -371,7 +36,7 @@ mkdir -p pcoa
 mkdir -p export/pcoa
 
 # I'm doing this step in order to deal the no space left in cluster :
-export TMPDIR='/scratch_vol1/fungi'
+export TMPDIR='/home/fungi'
 echo $TMPDIR
 
 # core_metrics_phylogenetic:
@@ -385,7 +50,7 @@ qiime diversity core-metrics-phylogenetic \
        --i-phylogeny tree/rooted-tree.qza \
        --i-table core/Table.qza \
        --p-sampling-depth 2537 \
-       --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
+       --m-metadata-file $DATABASE/sample-metadata_16S.tsv \
        --o-rarefied-table core/RarTable.qza \
        --o-observed-features-vector core/Vector-observed_asv.qza \
        --o-shannon-vector core/Vector-shannon.qza \
@@ -431,7 +96,7 @@ qiime feature-table tabulate-seqs \
 
 qiime feature-table summarize \
        --i-table core/RarTable.qza \
-       --m-sample-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
+       --m-sample-metadata-file $DATABASE/sample-metadata_16S.tsv \
        --o-visualization core/RarTable.qzv
 
 
@@ -485,7 +150,7 @@ qiime diversity pcoa --i-distance-matrix core/Matrix-jaccard.qza \
         --o-pcoa pcoa/PCoA-jaccard.qza
         
 qiime emperor plot --i-pcoa pcoa/PCoA-jaccard.qza \
-        --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
+        --m-metadata-file $DATABASE/sample-metadata_16S.tsv \
         --o-visualization visual/Emperor-jaccard.qzv
         
         
@@ -498,7 +163,7 @@ qiime diversity pcoa --i-distance-matrix core/Matrix-braycurtis.qza \
         --o-pcoa pcoa/PCoA-braycurtis.qza
 
 qiime emperor plot --i-pcoa pcoa/PCoA-braycurtis.qza \
-        --m-metadata-file $DATABASE//sample-metadata_others_markers_NC.tsv \
+        --m-metadata-file $DATABASE//sample-metadata_16S.tsv \
         --o-visualization visual/Emperor-braycurtis.qzv
 
 ### SIGNIFIANCE
@@ -507,75 +172,75 @@ qiime emperor plot --i-pcoa pcoa/PCoA-braycurtis.qza \
   
 qiime diversity alpha-group-significance \
   --i-alpha-diversity core/Vector-faith_pd.qza \
-  --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
+  --m-metadata-file $DATABASE/sample-metadata_16S.tsv \
   --o-visualization core/faith-pd-group-significance.qzv
 
 qiime diversity alpha-group-significance \
   --i-alpha-diversity core/Vector-evenness.qza \
-  --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
+  --m-metadata-file $DATABASE/sample-metadata_16S.tsv \
   --o-visualization core/evenness-group-significance.qzv
 
 qiime diversity alpha-group-significance \
   --i-alpha-diversity core/Vector-shannon.qza \
-  --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
+  --m-metadata-file $DATABASE/sample-metadata_16S.tsv \
   --o-visualization core/shannon_group-significance.qzv  
   
 # Aim: statistically compare groups of alpha/beta diversity values
 # Aim: Visually and statistically compare groups of alpha diversity values
 
 qiime diversity alpha-group-significance --i-alpha-diversity core/Vector-simpson.qza \
-        --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
+        --m-metadata-file $DATABASE/sample-metadata_16S.tsv \
         --o-visualization visual/AlphaSignification-simpson.qzv
 
 qiime diversity alpha-group-significance --i-alpha-diversity core/Vector-simpson_e.qza \
-        --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
+        --m-metadata-file $DATABASE/sample-metadata_16S.tsv \
         --o-visualization visual/AlphaSignification-simpson_e.qzv
             
 qiime diversity alpha-group-significance --i-alpha-diversity core/Vector-chao1_ci.qza \
-        --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
+        --m-metadata-file $DATABASE/sample-metadata_16S.tsv \
         --o-visualization visual/AlphaSignification-chao1_ci.qzv
 
 qiime diversity alpha-group-significance --i-alpha-diversity core/Vector-chao1.qza \
-        --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
+        --m-metadata-file $DATABASE/sample-metadata_16S.tsv \
         --o-visualization visual/AlphaSignification-chao1.qzv
 
 qiime diversity alpha-group-significance --i-alpha-diversity core/Vector-pielou_e.qza \
-        --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
+        --m-metadata-file $DATABASE/sample-metadata_16S.tsv \
         --o-visualization visual/AlphaSignification-pielou_e.qzv
         
 qiime diversity alpha-group-significance --i-alpha-diversity core/Vector-fisher_alpha.qza \
-        --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
+        --m-metadata-file $DATABASE/sample-metadata_16S.tsv \
         --o-visualization visual/AlphaSignification-fisher_alpha.qzv
 
 # Aim: Determine whether numeric sample metadata category is correlated with alpha diversity
 
 qiime diversity alpha-correlation --i-alpha-diversity core/Vector-simpson.qza \
-        --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
+        --m-metadata-file $DATABASE/sample-metadata_16S.tsv \
         --p-method spearman \
         --o-visualization visual/AlphaCorrelation-simpson.qzv
 
 qiime diversity alpha-correlation --i-alpha-diversity core/Vector-simpson_e.qza \
-        --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
+        --m-metadata-file $DATABASE/sample-metadata_16S.tsv \
         --p-method spearman \
         --o-visualization visual/AlphaCorrelation-simpson_e.qzv
 
 qiime diversity alpha-correlation --i-alpha-diversity core/Vector-chao1_ci.qza \
-        --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
+        --m-metadata-file $DATABASE/sample-metadata_16S.tsv \
         --p-method spearman \
         --o-visualization visual/AlphaCorrelation-chao1_ci.qzv
 
 qiime diversity alpha-correlation --i-alpha-diversity core/Vector-chao1.qza \
-        --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
+        --m-metadata-file $DATABASE/sample-metadata_16S.tsv \
         --p-method spearman \
         --o-visualization visual/AlphaCorrelation-chao1.qzv      
         
 qiime diversity alpha-correlation --i-alpha-diversity core/Vector-pielou_e.qza \
-        --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
+        --m-metadata-file $DATABASE/sample-metadata_16S.tsv \
         --p-method spearman \
         --o-visualization visual/AlphaCorrelation-pielou_e.qzv        
         
  qiime diversity alpha-correlation --i-alpha-diversity core/Vector-fisher_alpha.qza \
-        --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
+        --m-metadata-file $DATABASE/sample-metadata_16S.tsv \
         --p-method spearman \
         --o-visualization visual/AlphaCorrelation-fisher_alpha.qzv        
   
@@ -583,20 +248,20 @@ qiime diversity alpha-correlation --i-alpha-diversity core/Vector-pielou_e.qza \
 
 qiime diversity beta-group-significance \
   --i-distance-matrix core/Matrix-unweighted_unifrac.qza \
-  --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
+  --m-metadata-file $DATABASE/sample-metadata_16S.tsv \
   --m-metadata-column Acronyme \
   --o-visualization core/unweighted-unifrac-Acronyme-significance.qzv \
   --p-pairwise
 
 qiime diversity beta-group-significance \
   --i-distance-matrix core/Matrix-unweighted_unifrac.qza \
-  --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
+  --m-metadata-file $DATABASE/sample-metadata_16S.tsv \
   --m-metadata-column SampleID \
   --o-visualization core/unweighted-unifrac-SampleID-group-significance.qzv \
   --p-pairwise
   
 qiime diversity beta-group-significance --i-distance-matrix core/Matrix-jaccard.qza  \
-        --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv  \
+        --m-metadata-file $DATABASE/sample-metadata_16S.tsv  \
         --m-metadata-column Acronyme \
         --o-visualization visual/BetaSignification-jaccard-Acronyme.qzv  \
         --p-method permanova  \
@@ -604,7 +269,7 @@ qiime diversity beta-group-significance --i-distance-matrix core/Matrix-jaccard.
         --p-permutations 9999
   
 qiime diversity beta-group-significance --i-distance-matrix core/Matrix-braycurtis.qza  \
-        --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv  \
+        --m-metadata-file $DATABASE/sample-metadata_16S.tsv  \
         --m-metadata-column Acronyme \
         --o-visualization visual/BetaSignification-braycurtis-Acronyme.qzv  \
         --p-method permanova  \
@@ -617,14 +282,14 @@ qiime diversity beta-group-significance --i-distance-matrix core/Matrix-braycurt
 #first, use the unweighted unifrac data as input
 qiime emperor plot \
   --i-pcoa pcoa/PCoA-unweighted_unifrac.qza \
-  --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
+  --m-metadata-file $DATABASE/sample-metadata_16S.tsv \
   --p-custom-axes Acronyme \
   --o-visualization pcoa/unweighted-unifrac-emperor-Acronyme.qzv
 
 #now repeat with bray curtis
 qiime emperor plot \
   --i-pcoa pcoa/PCoA-braycurtis.qza \
-  --m-metadata-file $DATABASE/sample-metadata_others_markers_NC.tsv \
+  --m-metadata-file $DATABASE/sample-metadata_16S.tsv \
   --p-custom-axes Acronyme \
   --o-visualization pcoa/bray-curtis-emperor-Acronyme.qzv
 
@@ -675,18 +340,17 @@ qiime tools export --input-path pcoa/PCoA-weighted_unifrac.qza --output-path exp
 
 
 
+######################################################################################################################################################
+######################################################################################################################################################
+###### ITS ######
+######################################################################################################################################################
+######################################################################################################################################################
 
+WORKING_DIRECTORY=/home/fungi/Mayotte_microorganism_colonisation/05_QIIME2/ITS
+OUTPUT=/home/fungi/Mayotte_microorganism_colonisation/05_QIIME2/ITS/visual
 
-
-
-
-
-
-WORKING_DIRECTORY=/scratch_vol1/fungi/Mayotte_microorganism_colonisation/05_QIIME2/Original_reads_16S_ITS_18S_Reu
-OUTPUT=/scratch_vol1/fungi/Mayotte_microorganism_colonisation/05_QIIME2/Original_reads_16S_ITS_18S_Reu/visual
-
-DATABASE=/scratch_vol1/fungi/Mayotte_microorganism_colonisation/98_database_files
-TMPDIR=/scratch_vol1
+DATABASE=/home/fungi/Mayotte_microorganism_colonisation/98_database_files
+TMPDIR=/home
 
 # Aim: perform diversity metrics and rarefaction
 
@@ -712,7 +376,7 @@ mkdir -p pcoa
 mkdir -p export/pcoa
 
 # I'm doing this step in order to deal the no space left in cluster :
-export TMPDIR='/scratch_vol1/fungi'
+export TMPDIR='/home/fungi'
 echo $TMPDIR
 
 # core_metrics_phylogenetic:
@@ -725,8 +389,8 @@ echo $TMPDIR
 qiime diversity core-metrics-phylogenetic \
        --i-phylogeny tree/rooted-tree.qza \
        --i-table core/Table.qza \
-       --p-sampling-depth 1667 \
-       --m-metadata-file $DATABASE/sample-metadata_others_markers_Reu.tsv \
+       --p-sampling-depth 2537 \
+       --m-metadata-file $DATABASE/sample-metadata_ITS.tsv \
        --o-rarefied-table core/RarTable.qza \
        --o-observed-features-vector core/Vector-observed_asv.qza \
        --o-shannon-vector core/Vector-shannon.qza \
@@ -772,7 +436,7 @@ qiime feature-table tabulate-seqs \
 
 qiime feature-table summarize \
        --i-table core/RarTable.qza \
-       --m-sample-metadata-file $DATABASE/sample-metadata_others_markers_Reu.tsv \
+       --m-sample-metadata-file $DATABASE/sample-metadata_ITS.tsv \
        --o-visualization core/RarTable.qzv
 
 
@@ -826,7 +490,7 @@ qiime diversity pcoa --i-distance-matrix core/Matrix-jaccard.qza \
         --o-pcoa pcoa/PCoA-jaccard.qza
         
 qiime emperor plot --i-pcoa pcoa/PCoA-jaccard.qza \
-        --m-metadata-file $DATABASE/sample-metadata_others_markers_Reu.tsv \
+        --m-metadata-file $DATABASE/sample-metadata_ITS.tsv \
         --o-visualization visual/Emperor-jaccard.qzv
         
         
@@ -839,7 +503,7 @@ qiime diversity pcoa --i-distance-matrix core/Matrix-braycurtis.qza \
         --o-pcoa pcoa/PCoA-braycurtis.qza
 
 qiime emperor plot --i-pcoa pcoa/PCoA-braycurtis.qza \
-        --m-metadata-file $DATABASE//sample-metadata_others_markers_Reu.tsv \
+        --m-metadata-file $DATABASE//sample-metadata_ITS.tsv \
         --o-visualization visual/Emperor-braycurtis.qzv
 
 ### SIGNIFIANCE
@@ -848,75 +512,75 @@ qiime emperor plot --i-pcoa pcoa/PCoA-braycurtis.qza \
   
 qiime diversity alpha-group-significance \
   --i-alpha-diversity core/Vector-faith_pd.qza \
-  --m-metadata-file $DATABASE/sample-metadata_others_markers_Reu.tsv \
+  --m-metadata-file $DATABASE/sample-metadata_ITS.tsv \
   --o-visualization core/faith-pd-group-significance.qzv
 
 qiime diversity alpha-group-significance \
   --i-alpha-diversity core/Vector-evenness.qza \
-  --m-metadata-file $DATABASE/sample-metadata_others_markers_Reu.tsv \
+  --m-metadata-file $DATABASE/sample-metadata_ITS.tsv \
   --o-visualization core/evenness-group-significance.qzv
 
 qiime diversity alpha-group-significance \
   --i-alpha-diversity core/Vector-shannon.qza \
-  --m-metadata-file $DATABASE/sample-metadata_others_markers_Reu.tsv \
+  --m-metadata-file $DATABASE/sample-metadata_ITS.tsv \
   --o-visualization core/shannon_group-significance.qzv  
   
 # Aim: statistically compare groups of alpha/beta diversity values
 # Aim: Visually and statistically compare groups of alpha diversity values
 
 qiime diversity alpha-group-significance --i-alpha-diversity core/Vector-simpson.qza \
-        --m-metadata-file $DATABASE/sample-metadata_others_markers_Reu.tsv \
+        --m-metadata-file $DATABASE/sample-metadata_ITS.tsv \
         --o-visualization visual/AlphaSignification-simpson.qzv
 
 qiime diversity alpha-group-significance --i-alpha-diversity core/Vector-simpson_e.qza \
-        --m-metadata-file $DATABASE/sample-metadata_others_markers_Reu.tsv \
+        --m-metadata-file $DATABASE/sample-metadata_ITS.tsv \
         --o-visualization visual/AlphaSignification-simpson_e.qzv
             
 qiime diversity alpha-group-significance --i-alpha-diversity core/Vector-chao1_ci.qza \
-        --m-metadata-file $DATABASE/sample-metadata_others_markers_Reu.tsv \
+        --m-metadata-file $DATABASE/sample-metadata_ITS.tsv \
         --o-visualization visual/AlphaSignification-chao1_ci.qzv
 
 qiime diversity alpha-group-significance --i-alpha-diversity core/Vector-chao1.qza \
-        --m-metadata-file $DATABASE/sample-metadata_others_markers_Reu.tsv \
+        --m-metadata-file $DATABASE/sample-metadata_ITS.tsv \
         --o-visualization visual/AlphaSignification-chao1.qzv
 
 qiime diversity alpha-group-significance --i-alpha-diversity core/Vector-pielou_e.qza \
-        --m-metadata-file $DATABASE/sample-metadata_others_markers_Reu.tsv \
+        --m-metadata-file $DATABASE/sample-metadata_ITS.tsv \
         --o-visualization visual/AlphaSignification-pielou_e.qzv
         
 qiime diversity alpha-group-significance --i-alpha-diversity core/Vector-fisher_alpha.qza \
-        --m-metadata-file $DATABASE/sample-metadata_others_markers_Reu.tsv \
+        --m-metadata-file $DATABASE/sample-metadata_ITS.tsv \
         --o-visualization visual/AlphaSignification-fisher_alpha.qzv
 
 # Aim: Determine whether numeric sample metadata category is correlated with alpha diversity
 
 qiime diversity alpha-correlation --i-alpha-diversity core/Vector-simpson.qza \
-        --m-metadata-file $DATABASE/sample-metadata_others_markers_Reu.tsv \
+        --m-metadata-file $DATABASE/sample-metadata_ITS.tsv \
         --p-method spearman \
         --o-visualization visual/AlphaCorrelation-simpson.qzv
 
 qiime diversity alpha-correlation --i-alpha-diversity core/Vector-simpson_e.qza \
-        --m-metadata-file $DATABASE/sample-metadata_others_markers_Reu.tsv \
+        --m-metadata-file $DATABASE/sample-metadata_ITS.tsv \
         --p-method spearman \
         --o-visualization visual/AlphaCorrelation-simpson_e.qzv
 
 qiime diversity alpha-correlation --i-alpha-diversity core/Vector-chao1_ci.qza \
-        --m-metadata-file $DATABASE/sample-metadata_others_markers_Reu.tsv \
+        --m-metadata-file $DATABASE/sample-metadata_ITS.tsv \
         --p-method spearman \
         --o-visualization visual/AlphaCorrelation-chao1_ci.qzv
 
 qiime diversity alpha-correlation --i-alpha-diversity core/Vector-chao1.qza \
-        --m-metadata-file $DATABASE/sample-metadata_others_markers_Reu.tsv \
+        --m-metadata-file $DATABASE/sample-metadata_ITS.tsv \
         --p-method spearman \
         --o-visualization visual/AlphaCorrelation-chao1.qzv      
         
 qiime diversity alpha-correlation --i-alpha-diversity core/Vector-pielou_e.qza \
-        --m-metadata-file $DATABASE/sample-metadata_others_markers_Reu.tsv \
+        --m-metadata-file $DATABASE/sample-metadata_ITS.tsv \
         --p-method spearman \
         --o-visualization visual/AlphaCorrelation-pielou_e.qzv        
         
  qiime diversity alpha-correlation --i-alpha-diversity core/Vector-fisher_alpha.qza \
-        --m-metadata-file $DATABASE/sample-metadata_others_markers_Reu.tsv \
+        --m-metadata-file $DATABASE/sample-metadata_ITS.tsv \
         --p-method spearman \
         --o-visualization visual/AlphaCorrelation-fisher_alpha.qzv        
   
@@ -924,20 +588,20 @@ qiime diversity alpha-correlation --i-alpha-diversity core/Vector-pielou_e.qza \
 
 qiime diversity beta-group-significance \
   --i-distance-matrix core/Matrix-unweighted_unifrac.qza \
-  --m-metadata-file $DATABASE/sample-metadata_others_markers_Reu.tsv \
+  --m-metadata-file $DATABASE/sample-metadata_ITS.tsv \
   --m-metadata-column Acronyme \
   --o-visualization core/unweighted-unifrac-Acronyme-significance.qzv \
   --p-pairwise
 
 qiime diversity beta-group-significance \
   --i-distance-matrix core/Matrix-unweighted_unifrac.qza \
-  --m-metadata-file $DATABASE/sample-metadata_others_markers_Reu.tsv \
+  --m-metadata-file $DATABASE/sample-metadata_ITS.tsv \
   --m-metadata-column SampleID \
   --o-visualization core/unweighted-unifrac-SampleID-group-significance.qzv \
   --p-pairwise
   
 qiime diversity beta-group-significance --i-distance-matrix core/Matrix-jaccard.qza  \
-        --m-metadata-file $DATABASE/sample-metadata_others_markers_Reu.tsv  \
+        --m-metadata-file $DATABASE/sample-metadata_ITS.tsv  \
         --m-metadata-column Acronyme \
         --o-visualization visual/BetaSignification-jaccard-Acronyme.qzv  \
         --p-method permanova  \
@@ -945,7 +609,7 @@ qiime diversity beta-group-significance --i-distance-matrix core/Matrix-jaccard.
         --p-permutations 9999
   
 qiime diversity beta-group-significance --i-distance-matrix core/Matrix-braycurtis.qza  \
-        --m-metadata-file $DATABASE/sample-metadata_others_markers_Reu.tsv  \
+        --m-metadata-file $DATABASE/sample-metadata_ITS.tsv  \
         --m-metadata-column Acronyme \
         --o-visualization visual/BetaSignification-braycurtis-Acronyme.qzv  \
         --p-method permanova  \
@@ -958,14 +622,14 @@ qiime diversity beta-group-significance --i-distance-matrix core/Matrix-braycurt
 #first, use the unweighted unifrac data as input
 qiime emperor plot \
   --i-pcoa pcoa/PCoA-unweighted_unifrac.qza \
-  --m-metadata-file $DATABASE/sample-metadata_others_markers_Reu.tsv \
+  --m-metadata-file $DATABASE/sample-metadata_ITS.tsv \
   --p-custom-axes Acronyme \
   --o-visualization pcoa/unweighted-unifrac-emperor-Acronyme.qzv
 
 #now repeat with bray curtis
 qiime emperor plot \
   --i-pcoa pcoa/PCoA-braycurtis.qza \
-  --m-metadata-file $DATABASE/sample-metadata_others_markers_Reu.tsv \
+  --m-metadata-file $DATABASE/sample-metadata_ITS.tsv \
   --p-custom-axes Acronyme \
   --o-visualization pcoa/bray-curtis-emperor-Acronyme.qzv
 
@@ -1013,3 +677,685 @@ qiime tools export --input-path pcoa/PCoA-braycurtis.qza --output-path export/pc
 qiime tools export --input-path pcoa/PCoA-jaccard.qza --output-path export/pcoa/PCoA-jaccard
 qiime tools export --input-path pcoa/PCoA-unweighted_unifrac.qza --output-path export/pcoa/PCoA-unweighted_unifrac
 qiime tools export --input-path pcoa/PCoA-weighted_unifrac.qza --output-path export/pcoa/PCoA-weighted_unifrac
+
+
+
+######################################################################################################################################################
+######################################################################################################################################################
+###### TUFA ######
+######################################################################################################################################################
+######################################################################################################################################################
+
+WORKING_DIRECTORY=/home/fungi/Mayotte_microorganism_colonisation/05_QIIME2/TUFA
+OUTPUT=/home/fungi/Mayotte_microorganism_colonisation/05_QIIME2/TUFA/visual
+
+DATABASE=/home/fungi/Mayotte_microorganism_colonisation/98_database_files
+TMPDIR=/home
+
+# Aim: perform diversity metrics and rarefaction
+
+# https://chmi-sops.github.io/mydoc_qiime2.html#step-8-calculate-and-explore-diversity-metrics
+# https://docs.qiime2.org/2018.2/tutorials/moving-pictures/#alpha-rarefaction-plotting
+# https://forum.qiime2.org/t/how-to-decide-p-sampling-depth-value/3296/6
+
+# Use QIIME2’s diversity core-metrics-phylogenetic function to calculate a whole bunch of diversity metrics all at once. 
+# Note that you should input a sample-depth value based on the alpha-rarefaction analysis that you ran before.
+
+# sample-depth value choice : 
+# We are ideally looking for a sequencing depth at the point where these rarefaction curves begin to level off (indicating that most of the relevant diversity has been captured).
+# This helps inform tough decisions that we need to make when some samples have lower sequence counts and we need to balance the priorities that you want to choose 
+# a value high enough that you capture the diversity present in samples with high counts, but low enough that you don’t get rid of a ton of your samples.
+
+cd $WORKING_DIRECTORY
+
+eval "$(conda shell.bash hook)"
+conda activate qiime2-2021.4
+
+# Make the directory (mkdir) only if not existe already(-p)
+mkdir -p pcoa
+mkdir -p export/pcoa
+
+# I'm doing this step in order to deal the no space left in cluster :
+export TMPDIR='/home/fungi'
+echo $TMPDIR
+
+# core_metrics_phylogenetic:
+############################
+    # Aim: Applies a collection of diversity metrics to a feature table
+    # Use: qiime diversity core-metrics-phylogenetic [OPTIONS]
+    
+    # With 4202 -> 0 samples deleted
+
+qiime diversity core-metrics-phylogenetic \
+       --i-phylogeny tree/rooted-tree.qza \
+       --i-table core/Table.qza \
+       --p-sampling-depth 2537 \
+       --m-metadata-file $DATABASE/sample-metadata_TUFA.tsv \
+       --o-rarefied-table core/RarTable.qza \
+       --o-observed-features-vector core/Vector-observed_asv.qza \
+       --o-shannon-vector core/Vector-shannon.qza \
+       --o-evenness-vector core/Vector-evenness.qza \
+       --o-faith-pd-vector core/Vector-faith_pd.qza \
+       --o-jaccard-distance-matrix core/Matrix-jaccard.qza \
+       --o-bray-curtis-distance-matrix core/Matrix-braycurtis.qza \
+       --o-unweighted-unifrac-distance-matrix core/Matrix-unweighted_unifrac.qza \
+       --o-weighted-unifrac-distance-matrix core/Matrix-weighted_unifrac.qza \
+       --o-jaccard-pcoa-results pcoa/PCoA-jaccard.qza \
+       --o-bray-curtis-pcoa-results pcoa/PCoA-braycurtis.qza \
+       --o-unweighted-unifrac-pcoa-results pcoa/PCoA-unweighted_unifrac.qza \
+       --o-weighted-unifrac-pcoa-results pcoa/PCoA-weighted_unifrac.qza \
+       --o-jaccard-emperor visual/Emperor-jaccard.qzv \
+       --o-bray-curtis-emperor visual/Emperor-braycurtis.qzv \
+       --o-unweighted-unifrac-emperor visual/Emperor-unweighted_unifrac.qzv \
+       --o-weighted-unifrac-emperor visual/Emperor-weighted_unifrac.qzv
+
+
+# sequence_rarefaction_filter:
+##############################
+
+# Aim: Filter features from sequences based on a feature table or metadata.
+# Use: qiime feature-table filter-seqs [OPTIONS]
+
+qiime feature-table filter-seqs \
+        --i-data core/RepSeq.qza \
+        --i-table core/RarTable.qza \
+        --o-filtered-data core/RarRepSeq.qza
+
+# summarize_sequence:
+#####################
+
+qiime feature-table tabulate-seqs \
+       --i-data core/RarRepSeq.qza \
+       --o-visualization core/RarRepSeq.qzv
+
+# summarize_table :
+##################
+
+# Aim: Generate visual and tabular summaries of a feature table
+# Use: qiime feature-table summarize [OPTIONS]
+
+qiime feature-table summarize \
+       --i-table core/RarTable.qza \
+       --m-sample-metadata-file $DATABASE/sample-metadata_TUFA.tsv \
+       --o-visualization core/RarTable.qzv
+
+
+# Aim: compute user-specified diversity metrics and pcoa with emperor plot :
+############################################################################
+
+# alpha_diversity; Aim: Compute a user-specified alpha diversity metric, for all samples in a feature table
+############################################################################################################
+
+# Simpson's index: Measures the relative abundance of the different species making up the sample richness.
+qiime diversity alpha --i-table core/RarTable.qza \
+        --p-metric simpson \
+        --o-alpha-diversity core/Vector-simpson.qza
+
+# Simpson evenness measure E: Diversity that account for the number of organisms and number of species.
+qiime diversity alpha --i-table core/RarTable.qza \
+        --p-metric simpson_e \
+        --o-alpha-diversity core/Vector-simpson_e.qza
+
+# Fisher's index: Relationship between the number of species and the abundance of each species.
+qiime diversity alpha --i-table core/RarTable.qza \
+        --p-metric fisher_alpha \
+        --o-alpha-diversity core/Vector-fisher_alpha.qza
+        
+# Pielou's evenness: Measure of relative evenness of species richness.
+qiime diversity alpha --i-table core/RarTable.qza \
+        --p-metric pielou_e \
+        --o-alpha-diversity core/Vector-pielou_e.qza        
+
+# Chao1's index: Estimates diversity from abundant data and number of rare taxa missed from under sampling.
+qiime diversity alpha --i-table core/RarTable.qza \
+        --p-metric chao1 \
+        --o-alpha-diversity core/Vector-chao1.qza   
+
+# Chao1 confidence interval: Confidence interval for richness estimator chao1.
+qiime diversity alpha --i-table core/RarTable.qza \
+        --p-metric chao1_ci \
+        --o-alpha-diversity core/Vector-chao1_ci.qza   
+
+# beta_diversity; Aim: Compute a user-specified beta diversity metric, for all pairs of samples in a feature table
+##################################################################################################################
+
+#         --p-n-jobs {params.jobs} \
+
+# Jaccard similarity index: Fraction of unique features, regardless of abundance.
+qiime diversity beta --i-table core/RarTable.qza \
+        --p-metric jaccard \
+        --o-distance-matrix core/Matrix-jaccard.qza
+
+qiime diversity pcoa --i-distance-matrix core/Matrix-jaccard.qza \
+        --o-pcoa pcoa/PCoA-jaccard.qza
+        
+qiime emperor plot --i-pcoa pcoa/PCoA-jaccard.qza \
+        --m-metadata-file $DATABASE/sample-metadata_TUFA.tsv \
+        --o-visualization visual/Emperor-jaccard.qzv
+        
+        
+# Bray-Curtis dissimilarity: Fraction of overabundant counts.
+qiime diversity beta --i-table core/RarTable.qza \
+        --p-metric braycurtis \
+        --o-distance-matrix core/Matrix-braycurtis.qza
+
+qiime diversity pcoa --i-distance-matrix core/Matrix-braycurtis.qza \
+        --o-pcoa pcoa/PCoA-braycurtis.qza
+
+qiime emperor plot --i-pcoa pcoa/PCoA-braycurtis.qza \
+        --m-metadata-file $DATABASE//sample-metadata_TUFA.tsv \
+        --o-visualization visual/Emperor-braycurtis.qzv
+
+### SIGNIFIANCE
+  
+# Now test for relationships between alpha diversity and study metadata   
+  
+qiime diversity alpha-group-significance \
+  --i-alpha-diversity core/Vector-faith_pd.qza \
+  --m-metadata-file $DATABASE/sample-metadata_TUFA.tsv \
+  --o-visualization core/faith-pd-group-significance.qzv
+
+qiime diversity alpha-group-significance \
+  --i-alpha-diversity core/Vector-evenness.qza \
+  --m-metadata-file $DATABASE/sample-metadata_TUFA.tsv \
+  --o-visualization core/evenness-group-significance.qzv
+
+qiime diversity alpha-group-significance \
+  --i-alpha-diversity core/Vector-shannon.qza \
+  --m-metadata-file $DATABASE/sample-metadata_TUFA.tsv \
+  --o-visualization core/shannon_group-significance.qzv  
+  
+# Aim: statistically compare groups of alpha/beta diversity values
+# Aim: Visually and statistically compare groups of alpha diversity values
+
+qiime diversity alpha-group-significance --i-alpha-diversity core/Vector-simpson.qza \
+        --m-metadata-file $DATABASE/sample-metadata_TUFA.tsv \
+        --o-visualization visual/AlphaSignification-simpson.qzv
+
+qiime diversity alpha-group-significance --i-alpha-diversity core/Vector-simpson_e.qza \
+        --m-metadata-file $DATABASE/sample-metadata_TUFA.tsv \
+        --o-visualization visual/AlphaSignification-simpson_e.qzv
+            
+qiime diversity alpha-group-significance --i-alpha-diversity core/Vector-chao1_ci.qza \
+        --m-metadata-file $DATABASE/sample-metadata_TUFA.tsv \
+        --o-visualization visual/AlphaSignification-chao1_ci.qzv
+
+qiime diversity alpha-group-significance --i-alpha-diversity core/Vector-chao1.qza \
+        --m-metadata-file $DATABASE/sample-metadata_TUFA.tsv \
+        --o-visualization visual/AlphaSignification-chao1.qzv
+
+qiime diversity alpha-group-significance --i-alpha-diversity core/Vector-pielou_e.qza \
+        --m-metadata-file $DATABASE/sample-metadata_TUFA.tsv \
+        --o-visualization visual/AlphaSignification-pielou_e.qzv
+        
+qiime diversity alpha-group-significance --i-alpha-diversity core/Vector-fisher_alpha.qza \
+        --m-metadata-file $DATABASE/sample-metadata_TUFA.tsv \
+        --o-visualization visual/AlphaSignification-fisher_alpha.qzv
+
+# Aim: Determine whether numeric sample metadata category is correlated with alpha diversity
+
+qiime diversity alpha-correlation --i-alpha-diversity core/Vector-simpson.qza \
+        --m-metadata-file $DATABASE/sample-metadata_TUFA.tsv \
+        --p-method spearman \
+        --o-visualization visual/AlphaCorrelation-simpson.qzv
+
+qiime diversity alpha-correlation --i-alpha-diversity core/Vector-simpson_e.qza \
+        --m-metadata-file $DATABASE/sample-metadata_TUFA.tsv \
+        --p-method spearman \
+        --o-visualization visual/AlphaCorrelation-simpson_e.qzv
+
+qiime diversity alpha-correlation --i-alpha-diversity core/Vector-chao1_ci.qza \
+        --m-metadata-file $DATABASE/sample-metadata_TUFA.tsv \
+        --p-method spearman \
+        --o-visualization visual/AlphaCorrelation-chao1_ci.qzv
+
+qiime diversity alpha-correlation --i-alpha-diversity core/Vector-chao1.qza \
+        --m-metadata-file $DATABASE/sample-metadata_TUFA.tsv \
+        --p-method spearman \
+        --o-visualization visual/AlphaCorrelation-chao1.qzv      
+        
+qiime diversity alpha-correlation --i-alpha-diversity core/Vector-pielou_e.qza \
+        --m-metadata-file $DATABASE/sample-metadata_TUFA.tsv \
+        --p-method spearman \
+        --o-visualization visual/AlphaCorrelation-pielou_e.qzv        
+        
+ qiime diversity alpha-correlation --i-alpha-diversity core/Vector-fisher_alpha.qza \
+        --m-metadata-file $DATABASE/sample-metadata_TUFA.tsv \
+        --p-method spearman \
+        --o-visualization visual/AlphaCorrelation-fisher_alpha.qzv        
+  
+# Now test for relationships between beta diversity and study metadata 
+
+qiime diversity beta-group-significance \
+  --i-distance-matrix core/Matrix-unweighted_unifrac.qza \
+  --m-metadata-file $DATABASE/sample-metadata_TUFA.tsv \
+  --m-metadata-column Acronyme \
+  --o-visualization core/unweighted-unifrac-Acronyme-significance.qzv \
+  --p-pairwise
+
+qiime diversity beta-group-significance \
+  --i-distance-matrix core/Matrix-unweighted_unifrac.qza \
+  --m-metadata-file $DATABASE/sample-metadata_TUFA.tsv \
+  --m-metadata-column SampleID \
+  --o-visualization core/unweighted-unifrac-SampleID-group-significance.qzv \
+  --p-pairwise
+  
+qiime diversity beta-group-significance --i-distance-matrix core/Matrix-jaccard.qza  \
+        --m-metadata-file $DATABASE/sample-metadata_TUFA.tsv  \
+        --m-metadata-column Acronyme \
+        --o-visualization visual/BetaSignification-jaccard-Acronyme.qzv  \
+        --p-method permanova  \
+        --p-pairwise  \
+        --p-permutations 9999
+  
+qiime diversity beta-group-significance --i-distance-matrix core/Matrix-braycurtis.qza  \
+        --m-metadata-file $DATABASE/sample-metadata_TUFA.tsv  \
+        --m-metadata-column Acronyme \
+        --o-visualization visual/BetaSignification-braycurtis-Acronyme.qzv  \
+        --p-method permanova  \
+        --p-pairwise  \
+        --p-permutations 9999  
+
+# Create a PCoA plot to explore beta diversity metric. 
+# To do this you can use Emperor, a powerful tool for interactively exploring scatter plots. You do not need to install Emperor.
+
+#first, use the unweighted unifrac data as input
+qiime emperor plot \
+  --i-pcoa pcoa/PCoA-unweighted_unifrac.qza \
+  --m-metadata-file $DATABASE/sample-metadata_TUFA.tsv \
+  --p-custom-axes Acronyme \
+  --o-visualization pcoa/unweighted-unifrac-emperor-Acronyme.qzv
+
+#now repeat with bray curtis
+qiime emperor plot \
+  --i-pcoa pcoa/PCoA-braycurtis.qza \
+  --m-metadata-file $DATABASE/sample-metadata_TUFA.tsv \
+  --p-custom-axes Acronyme \
+  --o-visualization pcoa/bray-curtis-emperor-Acronyme.qzv
+
+qiime tools export --input-path core/RarTable.qza --output-path export/table/RarTable
+qiime tools export --input-path core/RarRepSeq.qza --output-path export/table/RarRepSeq
+
+qiime tools export --input-path visual/BetaSignification-braycurtis-Acronyme.qzv --output-path export/visual/BetaSignification-braycurtis-Acronyme
+qiime tools export --input-path visual/BetaSignification-jaccard-Acronyme.qzv --output-path export/visual/BetaSignification-jaccard-Acronyme
+qiime tools export --input-path visual/AlphaCorrelation-fisher_alpha.qzv --output-path export/visual/AlphaCorrelation-fisher_alpha
+qiime tools export --input-path visual/AlphaCorrelation-pielou_e.qzv --output-path export/visual/AlphaCorrelation-pielou_e
+qiime tools export --input-path visual/AlphaCorrelation-chao1.qzv --output-path export/visual/AlphaCorrelation-chao1
+qiime tools export --input-path visual/AlphaCorrelation-simpson_e.qzv --output-path export/visual/AlphaCorrelation-simpson_e
+qiime tools export --input-path visual/AlphaCorrelation-simpson.qzv --output-path export/visual/AlphaCorrelation-simpson
+qiime tools export --input-path visual/AlphaSignification-fisher_alpha.qzv --output-path export/visual/AlphaSignification-fisher_alpha
+qiime tools export --input-path visual/AlphaSignification-pielou_e.qzv --output-path export/visual/AlphaSignification-pielou_e
+qiime tools export --input-path visual/AlphaSignification-chao1.qzv --output-path export/visual/AlphaSignification-chao1
+qiime tools export --input-path visual/AlphaSignification-simpson_e.qzv --output-path export/visual/AlphaSignification-simpson_e
+qiime tools export --input-path visual/AlphaSignification-simpson.qzv --output-path export/visual/AlphaSignification-simpson
+qiime tools export --input-path visual/Emperor-braycurtis.qzv --output-path export/visual/Emperor-braycurtis
+qiime tools export --input-path visual/Emperor-jaccard.qzv --output-path export/visual/Emperor-jaccard
+qiime tools export --input-path visual/Emperor-weighted_unifrac.qzv --output-path export/visual/Emperor-weighted_unifrac
+qiime tools export --input-path visual/Emperor-unweighted_unifrac.qzv --output-path export/visual/Emperor-unweighted_unifrac 
+
+qiime tools export --input-path core/bray_curtis_distance_matrix.qza --output-path export/core/bray_curtis_distance_matrix
+qiime tools export --input-path core/Vector-evenness.qza --output-path export/core/Vector-evenness
+qiime tools export --input-path core/jaccard_distance_matrix.qza --output-path export/core/jaccard_distance_matrix
+qiime tools export --input-path core/jaccard_pcoa_results.qza --output-path export/core/jaccard_pcoa_results
+qiime tools export --input-path core/observed_otus_vector.qza --output-path export/core/observed_otus_vector
+qiime tools export --input-path core/rarefied_table.qza --output-path export/core/rarefied_table
+qiime tools export --input-path core/Vector-shannon.qza --output-path export/core/Vector-shannon
+qiime tools export --input-path core/Matrix-unweighted_unifrac.qza --output-path export/core/Matrix-unweighted_unifrac
+qiime tools export --input-path core/weighted_unifrac_distance_matrix.qza --output-path export/core/weighted_unifrac_distance_matrix
+qiime tools export --input-path core/weighted_unifrac_pcoa_results.qza --output-path export/core/weighted_unifrac_pcoa_results
+
+qiime tools export --input-path core/Matrix-braycurtis.qza --output-path export/core/Matrix-braycurtis
+qiime tools export --input-path core/Matrix-jaccard.qza --output-path export/core/Matrix-jaccard
+qiime tools export --input-path core/Matrix-unweighted_unifrac.qza --output-path export/core/Matrix-unweighted_unifrac
+qiime tools export --input-path core/Matrix-weighted_unifrac.qza --output-path export/core/Matrix-weighted_unifrac
+qiime tools export --input-path core/Vector-evenness.qza --output-path export/core/Vector-evenness
+qiime tools export --input-path core/Vector-faith_pd.qza --output-path export/core/Vector-faith_pd
+qiime tools export --input-path core/Vector-observed_asv.qza --output-path export/core/Vector-observed_asv
+qiime tools export --input-path core/Vector-shannon.qza --output-path export/core/Vector-shannon
+
+qiime tools export --input-path pcoa/PCoA-braycurtis.qza --output-path export/pcoa/PCoA-braycurtis
+qiime tools export --input-path pcoa/PCoA-jaccard.qza --output-path export/pcoa/PCoA-jaccard
+qiime tools export --input-path pcoa/PCoA-unweighted_unifrac.qza --output-path export/pcoa/PCoA-unweighted_unifrac
+qiime tools export --input-path pcoa/PCoA-weighted_unifrac.qza --output-path export/pcoa/PCoA-weighted_unifrac
+
+
+
+######################################################################################################################################################
+######################################################################################################################################################
+###### 18S ######
+######################################################################################################################################################
+######################################################################################################################################################
+
+WORKING_DIRECTORY=/home/fungi/Mayotte_microorganism_colonisation/05_QIIME2/18S
+OUTPUT=/home/fungi/Mayotte_microorganism_colonisation/05_QIIME2/18S/visual
+
+DATABASE=/home/fungi/Mayotte_microorganism_colonisation/98_database_files
+TMPDIR=/home
+
+# Aim: perform diversity metrics and rarefaction
+
+# https://chmi-sops.github.io/mydoc_qiime2.html#step-8-calculate-and-explore-diversity-metrics
+# https://docs.qiime2.org/2018.2/tutorials/moving-pictures/#alpha-rarefaction-plotting
+# https://forum.qiime2.org/t/how-to-decide-p-sampling-depth-value/3296/6
+
+# Use QIIME2’s diversity core-metrics-phylogenetic function to calculate a whole bunch of diversity metrics all at once. 
+# Note that you should input a sample-depth value based on the alpha-rarefaction analysis that you ran before.
+
+# sample-depth value choice : 
+# We are ideally looking for a sequencing depth at the point where these rarefaction curves begin to level off (indicating that most of the relevant diversity has been captured).
+# This helps inform tough decisions that we need to make when some samples have lower sequence counts and we need to balance the priorities that you want to choose 
+# a value high enough that you capture the diversity present in samples with high counts, but low enough that you don’t get rid of a ton of your samples.
+
+cd $WORKING_DIRECTORY
+
+eval "$(conda shell.bash hook)"
+conda activate qiime2-2021.4
+
+# Make the directory (mkdir) only if not existe already(-p)
+mkdir -p pcoa
+mkdir -p export/pcoa
+
+# I'm doing this step in order to deal the no space left in cluster :
+export TMPDIR='/home/fungi'
+echo $TMPDIR
+
+# core_metrics_phylogenetic:
+############################
+    # Aim: Applies a collection of diversity metrics to a feature table
+    # Use: qiime diversity core-metrics-phylogenetic [OPTIONS]
+    
+    # With 4202 -> 0 samples deleted
+
+qiime diversity core-metrics-phylogenetic \
+       --i-phylogeny tree/rooted-tree.qza \
+       --i-table core/Table.qza \
+       --p-sampling-depth 2537 \
+       --m-metadata-file $DATABASE/sample-metadata_18S.tsv \
+       --o-rarefied-table core/RarTable.qza \
+       --o-observed-features-vector core/Vector-observed_asv.qza \
+       --o-shannon-vector core/Vector-shannon.qza \
+       --o-evenness-vector core/Vector-evenness.qza \
+       --o-faith-pd-vector core/Vector-faith_pd.qza \
+       --o-jaccard-distance-matrix core/Matrix-jaccard.qza \
+       --o-bray-curtis-distance-matrix core/Matrix-braycurtis.qza \
+       --o-unweighted-unifrac-distance-matrix core/Matrix-unweighted_unifrac.qza \
+       --o-weighted-unifrac-distance-matrix core/Matrix-weighted_unifrac.qza \
+       --o-jaccard-pcoa-results pcoa/PCoA-jaccard.qza \
+       --o-bray-curtis-pcoa-results pcoa/PCoA-braycurtis.qza \
+       --o-unweighted-unifrac-pcoa-results pcoa/PCoA-unweighted_unifrac.qza \
+       --o-weighted-unifrac-pcoa-results pcoa/PCoA-weighted_unifrac.qza \
+       --o-jaccard-emperor visual/Emperor-jaccard.qzv \
+       --o-bray-curtis-emperor visual/Emperor-braycurtis.qzv \
+       --o-unweighted-unifrac-emperor visual/Emperor-unweighted_unifrac.qzv \
+       --o-weighted-unifrac-emperor visual/Emperor-weighted_unifrac.qzv
+
+
+# sequence_rarefaction_filter:
+##############################
+
+# Aim: Filter features from sequences based on a feature table or metadata.
+# Use: qiime feature-table filter-seqs [OPTIONS]
+
+qiime feature-table filter-seqs \
+        --i-data core/RepSeq.qza \
+        --i-table core/RarTable.qza \
+        --o-filtered-data core/RarRepSeq.qza
+
+# summarize_sequence:
+#####################
+
+qiime feature-table tabulate-seqs \
+       --i-data core/RarRepSeq.qza \
+       --o-visualization core/RarRepSeq.qzv
+
+# summarize_table :
+##################
+
+# Aim: Generate visual and tabular summaries of a feature table
+# Use: qiime feature-table summarize [OPTIONS]
+
+qiime feature-table summarize \
+       --i-table core/RarTable.qza \
+       --m-sample-metadata-file $DATABASE/sample-metadata_18S.tsv \
+       --o-visualization core/RarTable.qzv
+
+
+# Aim: compute user-specified diversity metrics and pcoa with emperor plot :
+############################################################################
+
+# alpha_diversity; Aim: Compute a user-specified alpha diversity metric, for all samples in a feature table
+############################################################################################################
+
+# Simpson's index: Measures the relative abundance of the different species making up the sample richness.
+qiime diversity alpha --i-table core/RarTable.qza \
+        --p-metric simpson \
+        --o-alpha-diversity core/Vector-simpson.qza
+
+# Simpson evenness measure E: Diversity that account for the number of organisms and number of species.
+qiime diversity alpha --i-table core/RarTable.qza \
+        --p-metric simpson_e \
+        --o-alpha-diversity core/Vector-simpson_e.qza
+
+# Fisher's index: Relationship between the number of species and the abundance of each species.
+qiime diversity alpha --i-table core/RarTable.qza \
+        --p-metric fisher_alpha \
+        --o-alpha-diversity core/Vector-fisher_alpha.qza
+        
+# Pielou's evenness: Measure of relative evenness of species richness.
+qiime diversity alpha --i-table core/RarTable.qza \
+        --p-metric pielou_e \
+        --o-alpha-diversity core/Vector-pielou_e.qza        
+
+# Chao1's index: Estimates diversity from abundant data and number of rare taxa missed from under sampling.
+qiime diversity alpha --i-table core/RarTable.qza \
+        --p-metric chao1 \
+        --o-alpha-diversity core/Vector-chao1.qza   
+
+# Chao1 confidence interval: Confidence interval for richness estimator chao1.
+qiime diversity alpha --i-table core/RarTable.qza \
+        --p-metric chao1_ci \
+        --o-alpha-diversity core/Vector-chao1_ci.qza   
+
+# beta_diversity; Aim: Compute a user-specified beta diversity metric, for all pairs of samples in a feature table
+##################################################################################################################
+
+#         --p-n-jobs {params.jobs} \
+
+# Jaccard similarity index: Fraction of unique features, regardless of abundance.
+qiime diversity beta --i-table core/RarTable.qza \
+        --p-metric jaccard \
+        --o-distance-matrix core/Matrix-jaccard.qza
+
+qiime diversity pcoa --i-distance-matrix core/Matrix-jaccard.qza \
+        --o-pcoa pcoa/PCoA-jaccard.qza
+        
+qiime emperor plot --i-pcoa pcoa/PCoA-jaccard.qza \
+        --m-metadata-file $DATABASE/sample-metadata_18S.tsv \
+        --o-visualization visual/Emperor-jaccard.qzv
+        
+        
+# Bray-Curtis dissimilarity: Fraction of overabundant counts.
+qiime diversity beta --i-table core/RarTable.qza \
+        --p-metric braycurtis \
+        --o-distance-matrix core/Matrix-braycurtis.qza
+
+qiime diversity pcoa --i-distance-matrix core/Matrix-braycurtis.qza \
+        --o-pcoa pcoa/PCoA-braycurtis.qza
+
+qiime emperor plot --i-pcoa pcoa/PCoA-braycurtis.qza \
+        --m-metadata-file $DATABASE//sample-metadata_18S.tsv \
+        --o-visualization visual/Emperor-braycurtis.qzv
+
+### SIGNIFIANCE
+  
+# Now test for relationships between alpha diversity and study metadata   
+  
+qiime diversity alpha-group-significance \
+  --i-alpha-diversity core/Vector-faith_pd.qza \
+  --m-metadata-file $DATABASE/sample-metadata_18S.tsv \
+  --o-visualization core/faith-pd-group-significance.qzv
+
+qiime diversity alpha-group-significance \
+  --i-alpha-diversity core/Vector-evenness.qza \
+  --m-metadata-file $DATABASE/sample-metadata_18S.tsv \
+  --o-visualization core/evenness-group-significance.qzv
+
+qiime diversity alpha-group-significance \
+  --i-alpha-diversity core/Vector-shannon.qza \
+  --m-metadata-file $DATABASE/sample-metadata_18S.tsv \
+  --o-visualization core/shannon_group-significance.qzv  
+  
+# Aim: statistically compare groups of alpha/beta diversity values
+# Aim: Visually and statistically compare groups of alpha diversity values
+
+qiime diversity alpha-group-significance --i-alpha-diversity core/Vector-simpson.qza \
+        --m-metadata-file $DATABASE/sample-metadata_18S.tsv \
+        --o-visualization visual/AlphaSignification-simpson.qzv
+
+qiime diversity alpha-group-significance --i-alpha-diversity core/Vector-simpson_e.qza \
+        --m-metadata-file $DATABASE/sample-metadata_18S.tsv \
+        --o-visualization visual/AlphaSignification-simpson_e.qzv
+            
+qiime diversity alpha-group-significance --i-alpha-diversity core/Vector-chao1_ci.qza \
+        --m-metadata-file $DATABASE/sample-metadata_18S.tsv \
+        --o-visualization visual/AlphaSignification-chao1_ci.qzv
+
+qiime diversity alpha-group-significance --i-alpha-diversity core/Vector-chao1.qza \
+        --m-metadata-file $DATABASE/sample-metadata_18S.tsv \
+        --o-visualization visual/AlphaSignification-chao1.qzv
+
+qiime diversity alpha-group-significance --i-alpha-diversity core/Vector-pielou_e.qza \
+        --m-metadata-file $DATABASE/sample-metadata_18S.tsv \
+        --o-visualization visual/AlphaSignification-pielou_e.qzv
+        
+qiime diversity alpha-group-significance --i-alpha-diversity core/Vector-fisher_alpha.qza \
+        --m-metadata-file $DATABASE/sample-metadata_18S.tsv \
+        --o-visualization visual/AlphaSignification-fisher_alpha.qzv
+
+# Aim: Determine whether numeric sample metadata category is correlated with alpha diversity
+
+qiime diversity alpha-correlation --i-alpha-diversity core/Vector-simpson.qza \
+        --m-metadata-file $DATABASE/sample-metadata_18S.tsv \
+        --p-method spearman \
+        --o-visualization visual/AlphaCorrelation-simpson.qzv
+
+qiime diversity alpha-correlation --i-alpha-diversity core/Vector-simpson_e.qza \
+        --m-metadata-file $DATABASE/sample-metadata_18S.tsv \
+        --p-method spearman \
+        --o-visualization visual/AlphaCorrelation-simpson_e.qzv
+
+qiime diversity alpha-correlation --i-alpha-diversity core/Vector-chao1_ci.qza \
+        --m-metadata-file $DATABASE/sample-metadata_18S.tsv \
+        --p-method spearman \
+        --o-visualization visual/AlphaCorrelation-chao1_ci.qzv
+
+qiime diversity alpha-correlation --i-alpha-diversity core/Vector-chao1.qza \
+        --m-metadata-file $DATABASE/sample-metadata_18S.tsv \
+        --p-method spearman \
+        --o-visualization visual/AlphaCorrelation-chao1.qzv      
+        
+qiime diversity alpha-correlation --i-alpha-diversity core/Vector-pielou_e.qza \
+        --m-metadata-file $DATABASE/sample-metadata_18S.tsv \
+        --p-method spearman \
+        --o-visualization visual/AlphaCorrelation-pielou_e.qzv        
+        
+ qiime diversity alpha-correlation --i-alpha-diversity core/Vector-fisher_alpha.qza \
+        --m-metadata-file $DATABASE/sample-metadata_18S.tsv \
+        --p-method spearman \
+        --o-visualization visual/AlphaCorrelation-fisher_alpha.qzv        
+  
+# Now test for relationships between beta diversity and study metadata 
+
+qiime diversity beta-group-significance \
+  --i-distance-matrix core/Matrix-unweighted_unifrac.qza \
+  --m-metadata-file $DATABASE/sample-metadata_18S.tsv \
+  --m-metadata-column Acronyme \
+  --o-visualization core/unweighted-unifrac-Acronyme-significance.qzv \
+  --p-pairwise
+
+qiime diversity beta-group-significance \
+  --i-distance-matrix core/Matrix-unweighted_unifrac.qza \
+  --m-metadata-file $DATABASE/sample-metadata_18S.tsv \
+  --m-metadata-column SampleID \
+  --o-visualization core/unweighted-unifrac-SampleID-group-significance.qzv \
+  --p-pairwise
+  
+qiime diversity beta-group-significance --i-distance-matrix core/Matrix-jaccard.qza  \
+        --m-metadata-file $DATABASE/sample-metadata_18S.tsv  \
+        --m-metadata-column Acronyme \
+        --o-visualization visual/BetaSignification-jaccard-Acronyme.qzv  \
+        --p-method permanova  \
+        --p-pairwise  \
+        --p-permutations 9999
+  
+qiime diversity beta-group-significance --i-distance-matrix core/Matrix-braycurtis.qza  \
+        --m-metadata-file $DATABASE/sample-metadata_18S.tsv  \
+        --m-metadata-column Acronyme \
+        --o-visualization visual/BetaSignification-braycurtis-Acronyme.qzv  \
+        --p-method permanova  \
+        --p-pairwise  \
+        --p-permutations 9999  
+
+# Create a PCoA plot to explore beta diversity metric. 
+# To do this you can use Emperor, a powerful tool for interactively exploring scatter plots. You do not need to install Emperor.
+
+#first, use the unweighted unifrac data as input
+qiime emperor plot \
+  --i-pcoa pcoa/PCoA-unweighted_unifrac.qza \
+  --m-metadata-file $DATABASE/sample-metadata_18S.tsv \
+  --p-custom-axes Acronyme \
+  --o-visualization pcoa/unweighted-unifrac-emperor-Acronyme.qzv
+
+#now repeat with bray curtis
+qiime emperor plot \
+  --i-pcoa pcoa/PCoA-braycurtis.qza \
+  --m-metadata-file $DATABASE/sample-metadata_18S.tsv \
+  --p-custom-axes Acronyme \
+  --o-visualization pcoa/bray-curtis-emperor-Acronyme.qzv
+
+qiime tools export --input-path core/RarTable.qza --output-path export/table/RarTable
+qiime tools export --input-path core/RarRepSeq.qza --output-path export/table/RarRepSeq
+
+qiime tools export --input-path visual/BetaSignification-braycurtis-Acronyme.qzv --output-path export/visual/BetaSignification-braycurtis-Acronyme
+qiime tools export --input-path visual/BetaSignification-jaccard-Acronyme.qzv --output-path export/visual/BetaSignification-jaccard-Acronyme
+qiime tools export --input-path visual/AlphaCorrelation-fisher_alpha.qzv --output-path export/visual/AlphaCorrelation-fisher_alpha
+qiime tools export --input-path visual/AlphaCorrelation-pielou_e.qzv --output-path export/visual/AlphaCorrelation-pielou_e
+qiime tools export --input-path visual/AlphaCorrelation-chao1.qzv --output-path export/visual/AlphaCorrelation-chao1
+qiime tools export --input-path visual/AlphaCorrelation-simpson_e.qzv --output-path export/visual/AlphaCorrelation-simpson_e
+qiime tools export --input-path visual/AlphaCorrelation-simpson.qzv --output-path export/visual/AlphaCorrelation-simpson
+qiime tools export --input-path visual/AlphaSignification-fisher_alpha.qzv --output-path export/visual/AlphaSignification-fisher_alpha
+qiime tools export --input-path visual/AlphaSignification-pielou_e.qzv --output-path export/visual/AlphaSignification-pielou_e
+qiime tools export --input-path visual/AlphaSignification-chao1.qzv --output-path export/visual/AlphaSignification-chao1
+qiime tools export --input-path visual/AlphaSignification-simpson_e.qzv --output-path export/visual/AlphaSignification-simpson_e
+qiime tools export --input-path visual/AlphaSignification-simpson.qzv --output-path export/visual/AlphaSignification-simpson
+qiime tools export --input-path visual/Emperor-braycurtis.qzv --output-path export/visual/Emperor-braycurtis
+qiime tools export --input-path visual/Emperor-jaccard.qzv --output-path export/visual/Emperor-jaccard
+qiime tools export --input-path visual/Emperor-weighted_unifrac.qzv --output-path export/visual/Emperor-weighted_unifrac
+qiime tools export --input-path visual/Emperor-unweighted_unifrac.qzv --output-path export/visual/Emperor-unweighted_unifrac 
+
+qiime tools export --input-path core/bray_curtis_distance_matrix.qza --output-path export/core/bray_curtis_distance_matrix
+qiime tools export --input-path core/Vector-evenness.qza --output-path export/core/Vector-evenness
+qiime tools export --input-path core/jaccard_distance_matrix.qza --output-path export/core/jaccard_distance_matrix
+qiime tools export --input-path core/jaccard_pcoa_results.qza --output-path export/core/jaccard_pcoa_results
+qiime tools export --input-path core/observed_otus_vector.qza --output-path export/core/observed_otus_vector
+qiime tools export --input-path core/rarefied_table.qza --output-path export/core/rarefied_table
+qiime tools export --input-path core/Vector-shannon.qza --output-path export/core/Vector-shannon
+qiime tools export --input-path core/Matrix-unweighted_unifrac.qza --output-path export/core/Matrix-unweighted_unifrac
+qiime tools export --input-path core/weighted_unifrac_distance_matrix.qza --output-path export/core/weighted_unifrac_distance_matrix
+qiime tools export --input-path core/weighted_unifrac_pcoa_results.qza --output-path export/core/weighted_unifrac_pcoa_results
+
+qiime tools export --input-path core/Matrix-braycurtis.qza --output-path export/core/Matrix-braycurtis
+qiime tools export --input-path core/Matrix-jaccard.qza --output-path export/core/Matrix-jaccard
+qiime tools export --input-path core/Matrix-unweighted_unifrac.qza --output-path export/core/Matrix-unweighted_unifrac
+qiime tools export --input-path core/Matrix-weighted_unifrac.qza --output-path export/core/Matrix-weighted_unifrac
+qiime tools export --input-path core/Vector-evenness.qza --output-path export/core/Vector-evenness
+qiime tools export --input-path core/Vector-faith_pd.qza --output-path export/core/Vector-faith_pd
+qiime tools export --input-path core/Vector-observed_asv.qza --output-path export/core/Vector-observed_asv
+qiime tools export --input-path core/Vector-shannon.qza --output-path export/core/Vector-shannon
+
+qiime tools export --input-path pcoa/PCoA-braycurtis.qza --output-path export/pcoa/PCoA-braycurtis
+qiime tools export --input-path pcoa/PCoA-jaccard.qza --output-path export/pcoa/PCoA-jaccard
+qiime tools export --input-path pcoa/PCoA-unweighted_unifrac.qza --output-path export/pcoa/PCoA-unweighted_unifrac
+qiime tools export --input-path pcoa/PCoA-weighted_unifrac.qza --output-path export/pcoa/PCoA-weighted_unifrac
+
+
