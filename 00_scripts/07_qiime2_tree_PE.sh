@@ -1,71 +1,14 @@
 #!/usr/bin/env bash
 
-## WORKING_DIRECTORY=/scratch_vol1/fungi/Mayotte_microorganism_colonisation/05_QIIME2/Original_reads_TUFA
-## OUTPUT=/scratch_vol1/fungi/Mayotte_microorganism_colonisation/05_QIIME2/Original_reads_TUFA/visual
-## TMPDIR=/scratch_vol1
-## 
-## # Make the directory (mkdir) only if not existe already(-p)
-## mkdir -p $OUTPUT
-## 
-## # Aim: construct a rooted phylogenetic tree
-## 
-## cd $WORKING_DIRECTORY
-## 
-## # Make the directory (mkdir) only if not existe already(-p)
-## mkdir -p tree
-## mkdir -p export/tree
-## 
-## eval "$(conda shell.bash hook)"
-## conda activate qiime2-2021.4
-## 
-## # I'm doing this step in order to deal the no space left in cluster :
-## export TMPDIR='/scratch_vol1/fungi'
-## echo $TMPDIR
-## 
-## #carry out a multiple seqeunce alignment using Mafft
-## 
-## #   --i-sequences core/ConRepSeq.qza \
-## 
-##  qiime alignment mafft \
-##   --i-sequences core/RepSeq.qza \
-##   --o-alignment tree/aligned-RepSeq.qza
-## 
-## ##mask (or filter) the alignment to remove positions that are highly variable. These positions are generally considered to add noise to a resulting phylogenetic tree.
-## qiime alignment mask \
-##   --i-alignment tree/aligned-RepSeq.qza \
-##   --o-masked-alignment tree/masked-aligned-RepSeq.qza
-## 
-## ##create the tree using the Fasttree program
-## qiime phylogeny fasttree \
-##   --i-alignment tree/masked-aligned-RepSeq.qza \
-##   --o-tree tree/unrooted-tree.qza
-## 
-## ##root the tree using the longest root
-## qiime phylogeny midpoint-root \
-##   --i-tree tree/unrooted-tree.qza \
-##   --o-rooted-tree tree/rooted-tree.qza
-##   
-##   
-## # This out put is in Newick format, see http://scikit-bio.org/docs/latest/generated/skbio.io.format.newick.html  
-## # See it on https://itol.embl.de
-## 
-## 
-## qiime tools export --input-path tree/unrooted-tree.qza --output-path export/tree/unrooted-tree
-## qiime tools export --input-path tree/rooted-tree.qza --output-path export/tree/rooted-tree
-## qiime tools export --input-path tree/aligned-RepSeq.qza --output-path export/tree/aligned-RepSeq
-## qiime tools export --input-path tree/masked-aligned-RepSeq.qza --output-path export/tree/masked-aligned-RepSeq
-## 
+######################################################################################################################################################
+######################################################################################################################################################
+###### 16S ######
+######################################################################################################################################################
+######################################################################################################################################################
 
-
-
-
-
-
-
-
-WORKING_DIRECTORY=/scratch_vol1/fungi/Mayotte_microorganism_colonisation/05_QIIME2/Original_reads_16S_ITS_18S_NC
-OUTPUT=/scratch_vol1/fungi/Mayotte_microorganism_colonisation/05_QIIME2/Original_reads_16S_ITS_18S_NC/visual
-TMPDIR=/scratch_vol1
+WORKING_DIRECTORY=/home/fungi/Mayotte_microorganism_colonisation/05_QIIME2/16S
+OUTPUT=/home/fungi/Mayotte_microorganism_colonisation/05_QIIME2/16S/visual
+TMPDIR=/home
 
 # Make the directory (mkdir) only if not existe already(-p)
 mkdir -p $OUTPUT
@@ -82,7 +25,7 @@ eval "$(conda shell.bash hook)"
 conda activate qiime2-2021.4
 
 # I'm doing this step in order to deal the no space left in cluster :
-export TMPDIR='/scratch_vol1/fungi'
+export TMPDIR='/home/fungi'
 echo $TMPDIR
 
 #carry out a multiple seqeunce alignment using Mafft
@@ -121,11 +64,17 @@ qiime tools export --input-path tree/masked-aligned-RepSeq.qza --output-path exp
 
 
 
+#!/usr/bin/env bash
 
+######################################################################################################################################################
+######################################################################################################################################################
+###### ITS ######
+######################################################################################################################################################
+######################################################################################################################################################
 
-WORKING_DIRECTORY=/scratch_vol1/fungi/Mayotte_microorganism_colonisation/05_QIIME2/Original_reads_16S_ITS_18S_Reu
-OUTPUT=/scratch_vol1/fungi/Mayotte_microorganism_colonisation/05_QIIME2/Original_reads_16S_ITS_18S_Reu/visual
-TMPDIR=/scratch_vol1
+WORKING_DIRECTORY=/home/fungi/Mayotte_microorganism_colonisation/05_QIIME2/ITS
+OUTPUT=/home/fungi/Mayotte_microorganism_colonisation/05_QIIME2/ITS/visual
+TMPDIR=/home
 
 # Make the directory (mkdir) only if not existe already(-p)
 mkdir -p $OUTPUT
@@ -142,7 +91,7 @@ eval "$(conda shell.bash hook)"
 conda activate qiime2-2021.4
 
 # I'm doing this step in order to deal the no space left in cluster :
-export TMPDIR='/scratch_vol1/fungi'
+export TMPDIR='/home/fungi'
 echo $TMPDIR
 
 #carry out a multiple seqeunce alignment using Mafft
@@ -177,3 +126,130 @@ qiime tools export --input-path tree/unrooted-tree.qza --output-path export/tree
 qiime tools export --input-path tree/rooted-tree.qza --output-path export/tree/rooted-tree
 qiime tools export --input-path tree/aligned-RepSeq.qza --output-path export/tree/aligned-RepSeq
 qiime tools export --input-path tree/masked-aligned-RepSeq.qza --output-path export/tree/masked-aligned-RepSeq
+
+#!/usr/bin/env bash
+
+######################################################################################################################################################
+######################################################################################################################################################
+###### TUFA ######
+######################################################################################################################################################
+######################################################################################################################################################
+
+WORKING_DIRECTORY=/home/fungi/Mayotte_microorganism_colonisation/05_QIIME2/TUFA
+OUTPUT=/home/fungi/Mayotte_microorganism_colonisation/05_QIIME2/TUFA/visual
+TMPDIR=/home
+
+# Make the directory (mkdir) only if not existe already(-p)
+mkdir -p $OUTPUT
+
+# Aim: construct a rooted phylogenetic tree
+
+cd $WORKING_DIRECTORY
+
+# Make the directory (mkdir) only if not existe already(-p)
+mkdir -p tree
+mkdir -p export/tree
+
+eval "$(conda shell.bash hook)"
+conda activate qiime2-2021.4
+
+# I'm doing this step in order to deal the no space left in cluster :
+export TMPDIR='/home/fungi'
+echo $TMPDIR
+
+#carry out a multiple seqeunce alignment using Mafft
+
+#   --i-sequences core/ConRepSeq.qza \
+
+ qiime alignment mafft \
+  --i-sequences core/RepSeq.qza \
+  --o-alignment tree/aligned-RepSeq.qza
+
+##mask (or filter) the alignment to remove positions that are highly variable. These positions are generally considered to add noise to a resulting phylogenetic tree.
+qiime alignment mask \
+  --i-alignment tree/aligned-RepSeq.qza \
+  --o-masked-alignment tree/masked-aligned-RepSeq.qza
+
+##create the tree using the Fasttree program
+qiime phylogeny fasttree \
+  --i-alignment tree/masked-aligned-RepSeq.qza \
+  --o-tree tree/unrooted-tree.qza
+
+##root the tree using the longest root
+qiime phylogeny midpoint-root \
+  --i-tree tree/unrooted-tree.qza \
+  --o-rooted-tree tree/rooted-tree.qza
+  
+  
+# This out put is in Newick format, see http://scikit-bio.org/docs/latest/generated/skbio.io.format.newick.html  
+# See it on https://itol.embl.de
+
+
+qiime tools export --input-path tree/unrooted-tree.qza --output-path export/tree/unrooted-tree
+qiime tools export --input-path tree/rooted-tree.qza --output-path export/tree/rooted-tree
+qiime tools export --input-path tree/aligned-RepSeq.qza --output-path export/tree/aligned-RepSeq
+qiime tools export --input-path tree/masked-aligned-RepSeq.qza --output-path export/tree/masked-aligned-RepSeq
+
+#!/usr/bin/env bash
+
+######################################################################################################################################################
+######################################################################################################################################################
+###### 18S ######
+######################################################################################################################################################
+######################################################################################################################################################
+
+WORKING_DIRECTORY=/home/fungi/Mayotte_microorganism_colonisation/05_QIIME2/18S
+OUTPUT=/home/fungi/Mayotte_microorganism_colonisation/05_QIIME2/18S/visual
+TMPDIR=/home
+
+# Make the directory (mkdir) only if not existe already(-p)
+mkdir -p $OUTPUT
+
+# Aim: construct a rooted phylogenetic tree
+
+cd $WORKING_DIRECTORY
+
+# Make the directory (mkdir) only if not existe already(-p)
+mkdir -p tree
+mkdir -p export/tree
+
+eval "$(conda shell.bash hook)"
+conda activate qiime2-2021.4
+
+# I'm doing this step in order to deal the no space left in cluster :
+export TMPDIR='/home/fungi'
+echo $TMPDIR
+
+#carry out a multiple seqeunce alignment using Mafft
+
+#   --i-sequences core/ConRepSeq.qza \
+
+ qiime alignment mafft \
+  --i-sequences core/RepSeq.qza \
+  --o-alignment tree/aligned-RepSeq.qza
+
+##mask (or filter) the alignment to remove positions that are highly variable. These positions are generally considered to add noise to a resulting phylogenetic tree.
+qiime alignment mask \
+  --i-alignment tree/aligned-RepSeq.qza \
+  --o-masked-alignment tree/masked-aligned-RepSeq.qza
+
+##create the tree using the Fasttree program
+qiime phylogeny fasttree \
+  --i-alignment tree/masked-aligned-RepSeq.qza \
+  --o-tree tree/unrooted-tree.qza
+
+##root the tree using the longest root
+qiime phylogeny midpoint-root \
+  --i-tree tree/unrooted-tree.qza \
+  --o-rooted-tree tree/rooted-tree.qza
+  
+  
+# This out put is in Newick format, see http://scikit-bio.org/docs/latest/generated/skbio.io.format.newick.html  
+# See it on https://itol.embl.de
+
+
+qiime tools export --input-path tree/unrooted-tree.qza --output-path export/tree/unrooted-tree
+qiime tools export --input-path tree/rooted-tree.qza --output-path export/tree/rooted-tree
+qiime tools export --input-path tree/aligned-RepSeq.qza --output-path export/tree/aligned-RepSeq
+qiime tools export --input-path tree/masked-aligned-RepSeq.qza --output-path export/tree/masked-aligned-RepSeq
+
