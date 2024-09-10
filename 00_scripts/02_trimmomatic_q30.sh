@@ -19,7 +19,7 @@ OUTPUT=/home/fungi/Mayotte_microorganism_colonisation/03_cleaned_data/16S
 # Make the directory (mkdir) only if not existe already(-p)
 mkdir -p $OUTPUT
 
-ADAPTERFILE=/scratch_vol1/fungi/Mayotte_microorganism_colonisation/99_softwares/adapters_sequences.fasta
+ADAPTERFILE=/home/fungi/Mayotte_microorganism_colonisation/99_softwares/adapters_sequences.fasta
 
 # Arguments :
 # ILLUMINACLIP:"$ADAPTERFILE":2:30:10 LEADING:30 TRAILING:30 SLIDINGWINDOW:26:30 MINLEN:150
@@ -69,7 +69,7 @@ OUTPUT=/home/fungi/Mayotte_microorganism_colonisation/03_cleaned_data/ITS
 # Make the directory (mkdir) only if not existe already(-p)
 mkdir -p $OUTPUT
 
-ADAPTERFILE=/scratch_vol1/fungi/Mayotte_microorganism_colonisation/99_softwares/adapters_sequences.fasta
+ADAPTERFILE=/home/fungi/Mayotte_microorganism_colonisation/99_softwares/adapters_sequences.fasta
 
 # Arguments :
 # ILLUMINACLIP:"$ADAPTERFILE":2:30:10 LEADING:30 TRAILING:30 SLIDINGWINDOW:26:30 MINLEN:150
@@ -106,7 +106,7 @@ OUTPUT=/home/fungi/Mayotte_microorganism_colonisation/03_cleaned_data/TUFA
 # Make the directory (mkdir) only if not existe already(-p)
 mkdir -p $OUTPUT
 
-ADAPTERFILE=/scratch_vol1/fungi/Mayotte_microorganism_colonisation/99_softwares/adapters_sequences.fasta
+ADAPTERFILE=/home/fungi/Mayotte_microorganism_colonisation/99_softwares/adapters_sequences.fasta
 
 # Arguments :
 # ILLUMINACLIP:"$ADAPTERFILE":2:30:10 LEADING:30 TRAILING:30 SLIDINGWINDOW:26:30 MINLEN:150
@@ -142,7 +142,7 @@ OUTPUT=/home/fungi/Mayotte_microorganism_colonisation/03_cleaned_data/18S
 # Make the directory (mkdir) only if not existe already(-p)
 mkdir -p $OUTPUT
 
-ADAPTERFILE=/scratch_vol1/fungi/Mayotte_microorganism_colonisation/99_softwares/adapters_sequences.fasta
+ADAPTERFILE=/home/fungi/Mayotte_microorganism_colonisation/99_softwares/adapters_sequences.fasta
 
 # Arguments :
 # ILLUMINACLIP:"$ADAPTERFILE":2:30:10 LEADING:30 TRAILING:30 SLIDINGWINDOW:26:30 MINLEN:150
